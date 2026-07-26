@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export const notFoundHandler = (
+export const notFoundHandler  = (
   req: Request,
   res: Response
 ): void => {

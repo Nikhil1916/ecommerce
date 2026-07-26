@@ -1,7 +1,19 @@
 import app from "./app";
+import { config } from "./config";
+import { connectDatabase } from "./lib/database";
+import logger from "./lib/logger";
 
-const PORT = 5000;
+const startServer = async (): Promise<void> => {
+  try {
+    await connectDatabase();
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+    app.listen(config.port, () => {
+      logger.info(`Server running on port ${config.port}`);
+    });
+  } catch (error) {
+    logger.fatal(error, "Application failed to start.");
+    process.exit(1);
+  }
+};
+
+startServer();
