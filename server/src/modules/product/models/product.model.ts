@@ -37,7 +37,6 @@ const productSchema = new Schema(
     price: {
       type: Number,
       required: true,
-      currency: String,
       min: [0, "Price cannot be negative"],
     },
 
@@ -68,6 +67,17 @@ const productSchema = new Schema(
   }
 );
 
-export type Product = InferSchemaType<typeof productSchema>;
+import { Types } from "mongoose";
+
+export type Product = InferSchemaType<typeof productSchema> & {
+    _id: Types.ObjectId;
+};
 
 export const ProductModel = model<Product>("Product", productSchema);
+
+export type CreateProductInput = Omit<
+  Product,
+  "_id" | "createdAt" | "updatedAt" | "isActive" | "categoryId"
+> & {
+  categoryId: string;
+};
