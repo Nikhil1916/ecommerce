@@ -8,15 +8,15 @@ export class MongoProductRepository implements IProductRepository {
   }
 
   async findById(id: string): Promise<Product | null> {
-    return await ProductModel.findOne({
+    return ProductModel.findOne({
       _id: id,
       isActive: true,
     }).lean();
   }
 
   async findByName(name: string): Promise<Product | null> {
-    return await ProductModel.findOne({
-      name,
+    return ProductModel.findOne({
+      name:new RegExp(`^${name}$`, "i"),
       isActive: true,
     }).lean();
   }

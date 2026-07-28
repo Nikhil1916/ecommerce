@@ -1,3 +1,4 @@
+import { ApiError } from "../../../core/ApiError";
 import { ICategoryRepository } from "../../category/repositories/category.repository";
 import { Product, CreateProductInput } from "../models/product.model";
 // import { ICategoryRepository } from "../repositories/category.repository";
@@ -17,7 +18,7 @@ export class ProductService {
     );
 
     if (!category) {
-      throw new Error("Category not found");
+      throw new ApiError(404, "Category not found");
     }
 
     const existingProduct =
@@ -27,7 +28,7 @@ export class ProductService {
       );
 
     if (existingProduct) {
-      throw new Error("Product already exists");
+      throw new ApiError(409, "Product already exists");
     }
 
     return this.productRepository.create(data);
@@ -40,7 +41,7 @@ export class ProductService {
       await this.productRepository.findById(id);
 
     if (!product) {
-      throw new Error("Product not found");
+      throw new ApiError(404, "Product not found");
     }
 
     return product;
@@ -94,7 +95,7 @@ export class ProductService {
       await this.productRepository.update(id, data);
 
     if (!updated) {
-      throw new Error("Failed to update product");
+      throw new ApiError(500, "Failed to update product");
     }
 
     return updated;
