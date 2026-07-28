@@ -1,5 +1,6 @@
+import { ICategoryRepository } from "../../category/repositories/category.repository";
 import { Product, CreateProductInput } from "../models/product.model";
-import { ICategoryRepository } from "../repositories/category.repository";
+// import { ICategoryRepository } from "../repositories/category.repository";
 import { IProductRepository } from "../repositories/product.repository";
 
 export class ProductService {

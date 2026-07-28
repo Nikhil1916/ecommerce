@@ -1,5 +1,6 @@
 import { Category } from "../models/category.model";
 
+
 export interface ICategoryRepository {
 
     create(data: Category): Promise<Category>;
