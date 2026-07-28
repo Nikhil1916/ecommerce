@@ -58,7 +58,7 @@ export class MongoProductRepository implements IProductRepository {
     name: string,
     categoryId: string,
   ): Promise<Product | null> {
-    return await ProductModel.findOne({
+    return ProductModel.findOne({
       name: new RegExp(`^${name}$`, "i"),
       categoryId,
       isActive: true,
