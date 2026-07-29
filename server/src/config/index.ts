@@ -1,3 +1,4 @@
+import { en } from "zod/v4/locales";
 import { env } from "./env";
 
 export const config = {
@@ -11,4 +12,6 @@ export const config = {
     secret: env.JWT_SECRET,
     expiresIn: env.JWT_EXPIRES_IN,
   },
+  BCRYPT_SALT_ROUNDS: env.BCRYPT_SALT_ROUNDS,
+  DATABASE_URL: env.DATABASE_URL
 };

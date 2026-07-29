@@ -1,9 +1,9 @@
-import { Prisma, User } from "@prisma/client";
+import { Prisma, Role, User } from "@prisma/client";
 
 export abstract class AuthRepository {
     abstract findByEmail(email: string): Promise<User | null>;
 
-    abstract create(data: Prisma.UserCreateInput): Promise<User>;
+    abstract create(data: CreateUserData): Promise<User>;
 
     abstract updatePassword(
         userId: string,
@@ -29,4 +29,12 @@ export abstract class AuthRepository {
     //     userId: string,
     //     refreshToken: string | null
     // ): Promise<User>;
+}
+
+export interface CreateUserData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    passwordHash: string;
+    role?: Role;
 }

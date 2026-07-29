@@ -6,6 +6,7 @@ import { requestId } from "./middlewares/requestId.middleware";
 import { loggerMiddleware } from "./middlewares/logger.middleware";
 import productRoutes from "./modules/product/routes/product.routes";
 import categoryRoutes from "./modules/category/routes/category.routes";
+import { authRouter } from "./modules/auth/auth.module";
 const app = express();
 
 app.use(requestId);
@@ -16,14 +17,15 @@ app.use(express.json());
 
 app.get("/health", (req, res) => {
   res.json(
-    new ApiResponse("Server Running", {
+     ApiResponse.success("Server Running", {
       requestId: req.requestId,
     })
   );
 });
 
-app.use("/api/products", productRoutes);
-app.use("/api/categories", categoryRoutes);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/categories", categoryRoutes);
 
 // 404 Middleware
 app.use(notFoundHandler);

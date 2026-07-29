@@ -1,5 +1,11 @@
 export class ApiResponse<T> {
-    constructor(public readonly message: string,
-         public readonly data?: T,
-         public readonly success: boolean = true) {}
+    private constructor(
+        public readonly success: boolean,
+        public readonly message: string,
+        public readonly data?: T
+    ) {}
+
+    static success<T>(message: string, data?: T): ApiResponse<T> {
+        return new ApiResponse(true, message, data);
+    }
 }
