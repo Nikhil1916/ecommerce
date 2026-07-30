@@ -14,6 +14,12 @@ const envSchema = z.object({
   ]),
   BCRYPT_SALT_ROUNDS: z.coerce.number().default(12),
   DATABASE_URL: z.string(),
+  MAX_FAILED_LOGIN_ATTEMPTS: z.coerce.number(),
+  ACCOUNT_LOCK_DURATION_MINUTES: z.coerce.number(),
+  JWT_ACCESS_SECRET: z.string(),
+  JWT_REFRESH_SECRET: z.string(),
+  JWT_ACCESS_EXPIRES_IN: z.string(),
+  JWT_REFRESH_EXPIRES_IN: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

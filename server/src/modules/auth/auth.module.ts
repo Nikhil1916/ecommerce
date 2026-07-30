@@ -1,11 +1,14 @@
 import { AuthController } from "./controllers/auth.controller";
 import { AuthRepository } from "./repositories/auth.repository";
 import { PrismaAuthRepository } from "./repositories/prisma-auth.repository";
+import { RefreshTokenRepository } from "./repositories/prisma-refresh-token-repository";
+import { IRefreshTokenRepository } from "./repositories/refresh-token-repository";
 import { createAuthRouter } from "./routes/auth.routes";
 import { AuthService } from "./services/auth.service";
 
 const repository:AuthRepository = new PrismaAuthRepository();
-const service = new AuthService(repository);
+const refreshRepo = new RefreshTokenRepository();
+const service = new AuthService(repository, refreshRepo);
 const controller = new AuthController(service);
 
 export const authRouter = createAuthRouter(controller);
