@@ -6,7 +6,7 @@ import { AuthRepository } from "../repositories/auth.repository";
 import { LoginResponseDto, LoginUserDto } from "../schemas/login-user.schema";
 import { RegisterUserDto, UserResponseDto } from "../schemas/register-user.schema";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import ms, { StringValue } from "ms";
 import { RefreshTokenRepository } from "../repositories/prisma-refresh-token-repository";
@@ -142,6 +142,108 @@ private async verifyRefreshTokenHash(
     tokenHash: string
 ): Promise<boolean> {
     return bcrypt.compare(refreshToken, tokenHash);
+}
+
+private verifyRefreshToken(
+    refreshToken: string
+): JwtPayload {
+    return jwt.verify(
+        refreshToken,
+        config.JWT_REFRESH_SECRET
+    ) as JwtPayload;
+}
+
+async refreshToken(
+    refreshToken?: string
+): Promise<LoginResponseDto> {
+
+    // 1. Cookie present?
+    if (!refreshToken) {
+        throw new ApiError(401, "Invalid refresh token.");
+    }
+
+    // 2. Verify JWT (signature + expiry)
+    const payload = this.verifyRefreshToken(refreshToken);
+
+    // 3. Find stored refresh token using jti
+    const storedRefreshToken =
+        await this.refreshTokenRepository.findByJti(
+            payload.jti as string
+        );
+
+    if (!storedRefreshToken) {
+        throw new ApiError(401, "Invalid refresh token.");
+    }
+
+    // 4. Revoked?
+    if (storedRefreshToken.revokedAt) {
+        throw new ApiError(401, "Invalid refresh token.");
+    }
+
+    // 5. Expired in DB?
+    if (storedRefreshToken.validUntil < new Date()) {
+        throw new ApiError(401, "Invalid refresh token.");
+    }
+
+    // 6. Compare incoming token with stored hash
+    const isValid = await this.verifyRefreshTokenHash(
+        refreshToken,
+        storedRefreshToken.tokenHash
+    );
+
+    if (!isValid) {
+        throw new ApiError(401, "Invalid refresh token.");
+    }
+
+    // 7. Get latest user
+    const user = await this.authRepository.findById(
+        payload.sub as string
+    );
+
+    if (!user) {
+        throw new ApiError(401, "Invalid refresh token.");
+    }
+
+    if (!user.isActive) {
+        throw new ApiError(403, "Your account has been disabled.");
+    }
+
+    // 8. Rotate refresh token
+    const newJti = randomUUID();
+
+    const accessToken =
+        this.generateAccessToken(user);
+
+    const newRefreshToken =
+        this.generateRefreshToken(user, newJti);
+
+    const newRefreshTokenHash =
+        await this.hashRefreshToken(newRefreshToken);
+
+    const validUntil = new Date(
+        Date.now() +
+        ms(config.JWT_REFRESH_EXPIRES_IN as StringValue)
+    );
+
+    // 9. Revoke old refresh token
+    await this.refreshTokenRepository.revoke(
+        storedRefreshToken.id
+    );
+
+    // 10. Store new refresh token
+    await this.refreshTokenRepository.create(
+        user.id,
+        newJti,
+        newRefreshTokenHash,
+        validUntil
+    );
+
+    // 11. Return
+    return {
+        user: toUserResponseDto(user),
+        accessToken,
+        refreshToken: newRefreshToken,
+    };
 }
 
 }

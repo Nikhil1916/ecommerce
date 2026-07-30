@@ -15,34 +15,64 @@ export class AuthController {
       .json(ApiResponse.success("User registered successfully.", user));
   });
 
-    login = asyncHandler(async(
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ): Promise<void> => {
-            const dto:LoginUserDto = req.body;
+  login = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+      const dto: LoginUserDto = req.body;
 
-            const result = await this.authService.login(dto);
+      const result = await this.authService.login(dto);
 
-            res.cookie(
-                "accessToken",
-                result.accessToken,
-                getAccessTokenCookieOptions()
-            );
+      res.cookie(
+        "accessToken",
+        result.accessToken,
+        getAccessTokenCookieOptions(),
+      );
 
-            res.cookie(
-                "refreshToken",
-                result.refreshToken,
-                getRefreshTokenCookieOptions()
-            );
+      res.cookie(
+        "refreshToken",
+        result.refreshToken,
+        getRefreshTokenCookieOptions(),
+      );
 
-            res.status(200).json(
-                 ApiResponse.success(
-                   "Login successful.",
-                    {
-                        user: result.user,
-                    },
-                )
-            );
-    })
+      res.status(200).json(
+        ApiResponse.success("Login successful.", {
+          user: result.user,
+        }),
+      );
+    },
+  );
+
+  async refreshToken(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+
+      const result = await this.authService.refreshToken(refreshToken);
+
+      res.cookie(
+        "accessToken",
+        result.accessToken,
+        getAccessTokenCookieOptions(),
+      );
+
+      res.cookie(
+        "refreshToken",
+        result.refreshToken,
+        getRefreshTokenCookieOptions(),
+      );
+
+      res.status(200).json(
+        ApiResponse.success(
+          "Token refreshed successfully.",
+          {
+            user: result.user,
+          },
+        ),
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -80,4 +80,12 @@ export class PrismaAuthRepository extends AuthRepository {
       },
     });
   }
+
+  async findById(id: string): Promise<User | null> {
+    return prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
 }

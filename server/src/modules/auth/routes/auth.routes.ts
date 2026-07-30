@@ -22,5 +22,7 @@ export const createAuthRouter = (
         authController.login.bind(authController)
     );
 
+    router.post("/refresh", authController.refreshToken.bind(authController));
+
     return router;
 };
