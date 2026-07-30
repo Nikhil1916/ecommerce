@@ -15,3 +15,9 @@ export const getRefreshTokenCookieOptions = (): CookieOptions => ({
     sameSite: "strict",
     maxAge: ms(config.JWT_REFRESH_EXPIRES_IN as StringValue),
 });
+
+export const clearCookieOptions: CookieOptions = {
+    httpOnly: true,
+    secure: config.nodeEnv === "production",
+    sameSite: "strict",
+};

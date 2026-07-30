@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.service";
 import { ApiResponse } from "../../../core/ApiResponse";
 import { asyncHandler } from "../../../core/asyncHandler";
-import { getAccessTokenCookieOptions, getRefreshTokenCookieOptions } from "../../../utils/cookie.util";
+import { clearCookieOptions, getAccessTokenCookieOptions, getRefreshTokenCookieOptions } from "../../../utils/cookie.util";
 import { LoginUserDto } from "../schemas/login-user.schema";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -75,4 +75,20 @@ export class AuthController {
       next(error);
     }
   }
+
+  logout = asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    await this.authService.logout(refreshToken);
+
+    res.clearCookie("accessToken", clearCookieOptions);
+    res.clearCookie("refreshToken", clearCookieOptions);
+    res.status(200).json(
+        ApiResponse.success(
+            "Logout successful."
+        )
+    );
+});
+
+  
 }

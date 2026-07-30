@@ -246,4 +246,27 @@ async refreshToken(
     };
 }
 
+async logout(refreshToken?: string): Promise<void> {
+    if (!refreshToken) {
+        return;
+    }
+
+    const payload = this.verifyRefreshToken(refreshToken);
+
+    const storedRefreshToken =
+        await this.refreshTokenRepository.findByJti(payload.jti as string);
+
+    if (!storedRefreshToken) {
+        return;
+    }
+
+    if (storedRefreshToken.revokedAt) {
+        return;
+    }
+
+    await this.refreshTokenRepository.revoke(
+        storedRefreshToken.id
+    );
+}
+
 }
