@@ -8,6 +8,12 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ): void => {
+
+    // Unknown Errors
+    console.error("RequestId:", req.requestId);
+  console.error(err);
+
+
   // Business Errors
   if (err instanceof ApiError) {
     res.status(err.statusCode).json({
@@ -26,6 +32,7 @@ export const errorHandler = (
       errors: err.issues.map((issue) => ({
         field: issue.path.join("."),
         message: issue.message,
+        requestId: req.requestId,
       })),
     });
     return;
@@ -39,16 +46,15 @@ export const errorHandler = (
       success: false,
       message: "Internal Server Error",
       errors: [err.message],
+      requestId: req.requestId,
     });
     return;
   }
-
-  // Unknown Errors
-  console.error(err);
 
   res.status(500).json({
     success: false,
     message: "Internal Server Error",
     errors: ["Unknown error occurred"],
+    requestId: req.requestId,
   });
 };

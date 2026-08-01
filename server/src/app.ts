@@ -7,15 +7,16 @@ import { loggerMiddleware } from "./middlewares/logger.middleware";
 import productRoutes from "./modules/product/routes/product.routes";
 import categoryRoutes from "./modules/category/routes/category.routes";
 import { authRouter } from "./modules/auth/auth.module";
+import cookieParser from "cookie-parser";
 const app = express();
 
 app.use(requestId);
 app.use(loggerMiddleware);
 
 app.use(express.json());
+app.use(cookieParser());
 
-
-app.get("/health", (req, res) => {
+app.get("/api/v1/health", (req, res) => {
   res.json(
      ApiResponse.success("Server Running", {
       requestId: req.requestId,

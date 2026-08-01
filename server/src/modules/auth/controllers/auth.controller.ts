@@ -12,7 +12,7 @@ export class AuthController {
 
     return res
       .status(201)
-      .json(ApiResponse.success("User registered successfully.", user));
+      .json(ApiResponse.success("User registered successfully.", user,  req.requestId));
   });
 
   login = asyncHandler(
@@ -36,7 +36,7 @@ export class AuthController {
       res.status(200).json(
         ApiResponse.success("Login successful.", {
           user: result.user,
-        }),
+        },  req.requestId),
       );
     },
   );
@@ -69,6 +69,7 @@ export class AuthController {
           {
             user: result.user,
           },
+          req.requestId
         ),
       );
     } catch (error) {
@@ -85,7 +86,9 @@ export class AuthController {
     res.clearCookie("refreshToken", clearCookieOptions);
     res.status(200).json(
         ApiResponse.success(
-            "Logout successful."
+            "Logout successful.",
+            undefined,
+            req.requestId
         )
     );
 });
@@ -107,7 +110,9 @@ logoutAll = asyncHandler(async (req, res) => {
 
     res.status(200).json(
         ApiResponse.success(
-            "Logged out from all devices."
+            "Logged out from all devices.",
+            undefined,
+            req.requestId
         )
     );
 });
