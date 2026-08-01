@@ -10,7 +10,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import ms, { StringValue } from "ms";
 import { RefreshTokenRepository } from "../repositories/prisma-refresh-token-repository";
-
+import { jwtService } from "../../../utils/jwt.util";
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository, private readonly refreshTokenRepository:RefreshTokenRepository) {}
 
@@ -144,15 +144,6 @@ private async verifyRefreshTokenHash(
     return bcrypt.compare(refreshToken, tokenHash);
 }
 
-private verifyRefreshToken(
-    refreshToken: string
-): JwtPayload {
-    return jwt.verify(
-        refreshToken,
-        config.JWT_REFRESH_SECRET
-    ) as JwtPayload;
-}
-
 async refreshToken(
     refreshToken?: string
 ): Promise<LoginResponseDto> {
@@ -163,7 +154,7 @@ async refreshToken(
     }
 
     // 2. Verify JWT (signature + expiry)
-    const payload = this.verifyRefreshToken(refreshToken);
+    const payload = jwtService.verifyRefreshToken(refreshToken);
 
     // 3. Find stored refresh token using jti
     const storedRefreshToken =
@@ -251,7 +242,7 @@ async logout(refreshToken?: string): Promise<void> {
         return;
     }
 
-    const payload = this.verifyRefreshToken(refreshToken);
+    const payload = jwtService.verifyRefreshToken(refreshToken);
 
     const storedRefreshToken =
         await this.refreshTokenRepository.findByJti(payload.jti as string);
@@ -274,7 +265,7 @@ async logoutAll(refreshToken?: string): Promise<void> {
         return;
     }
 
-    const payload = this.verifyRefreshToken(refreshToken);
+    const payload = jwtService.verifyRefreshToken(refreshToken);
 
     await this.refreshTokenRepository.revokeAllByUserId(
         payload.sub as string
