@@ -26,5 +26,7 @@ export const createAuthRouter = (
 
     router.post("/logout", authController.logout)
 
+    router.post("/logout-all", authController.logoutAll);
+
     return router;
 };

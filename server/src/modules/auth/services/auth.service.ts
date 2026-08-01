@@ -269,4 +269,16 @@ async logout(refreshToken?: string): Promise<void> {
     );
 }
 
+async logoutAll(refreshToken?: string): Promise<void> {
+    if (!refreshToken) {
+        return;
+    }
+
+    const payload = this.verifyRefreshToken(refreshToken);
+
+    await this.refreshTokenRepository.revokeAllByUserId(
+        payload.sub as string
+    );
+}
+
 }

@@ -90,5 +90,27 @@ export class AuthController {
     );
 });
 
+logoutAll = asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    await this.authService.logoutAll(refreshToken);
+
+    res.clearCookie(
+        "accessToken",
+        clearCookieOptions
+    );
+
+    res.clearCookie(
+        "refreshToken",
+        clearCookieOptions
+    );
+
+    res.status(200).json(
+        ApiResponse.success(
+            "Logged out from all devices."
+        )
+    );
+});
+
   
 }
