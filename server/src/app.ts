@@ -8,6 +8,7 @@ import productRoutes from "./modules/product/routes/product.routes";
 import categoryRoutes from "./modules/category/routes/category.routes";
 import { authRouter } from "./modules/auth/auth.module";
 import cookieParser from "cookie-parser";
+import { userRouter } from "./modules/user/user.module";
 const app = express();
 
 app.use(requestId);
@@ -27,6 +28,7 @@ app.get("/api/v1/health", (req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/categories", categoryRoutes);
+app.use("/api/v1/users", userRouter);
 
 // 404 Middleware
 app.use(notFoundHandler);
