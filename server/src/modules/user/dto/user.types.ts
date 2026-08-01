@@ -5,3 +5,4 @@ export interface RegisterUserDto {
     phone?: string;
     password: string;
 }
+

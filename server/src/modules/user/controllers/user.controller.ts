@@ -1,17 +1,22 @@
-import { ApiResponse } from "../../../core/ApiResponse";
+import { Request, Response } from "express";
 import { asyncHandler } from "../../../core/asyncHandler";
-
+import { ApiResponse } from "../../../core/ApiResponse";
+import { UserService } from "../services/user.service";
 
 export class UserController {
-    getMe = asyncHandler(async (req, res) => {
-        // console.log("User profile fetched successfully.", req.user);
-    res.status(200).json(
-        ApiResponse.success(
-            "User profile fetched successfully.",
-            req.user,
-            req.requestId
-        )
-    );
-});
+  constructor(
+    private readonly userService: UserService
+  ) {}
 
+  getMe = asyncHandler(async (req: Request, res: Response) => {
+    const user = await this.userService.getMe(req.user!);
+
+    res.status(200).json(
+      ApiResponse.success(
+        "Profile fetched successfully.",
+        user,
+        req.requestId
+      )
+    );
+  });
 }
