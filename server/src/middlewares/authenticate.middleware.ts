@@ -14,28 +14,32 @@ export class AuthMiddleware {
     next: NextFunction
   ): Promise<void> => {
     try {
+//         console.log(req.cookies);
+// console.log(req.headers.cookie);
       const accessToken = req.cookies.accessToken;
 
       if (!accessToken) {
-        throw new ApiError(401, "Unauthorized.");
+        throw new ApiError(401, "Unauthorized.", [], req.requestId);
       }
 
       const payload = jwtService.verifyAccessToken(accessToken);
 
       if (!payload.iat) {
-        throw new ApiError(401, "Unauthorized.");
+        throw new ApiError(401, "Unauthorized.", [], req.requestId);
       }
 
       const user = await this.authRepository.findById(payload.sub);
 
       if (!user) {
-        throw new ApiError(401, "Unauthorized.");
+        throw new ApiError(401, "Unauthorized.", [], req.requestId);
       }
 
       if (!user.isActive) {
         throw new ApiError(
           403,
-          "Your account has been disabled."
+          "Your account has been disabled.",
+          [],
+          req.requestId
         );
       }
 
@@ -47,7 +51,9 @@ export class AuthMiddleware {
       ) {
         throw new ApiError(
           401,
-          "Session expired. Please login again."
+          "Session expired. Please login again.",
+          [],
+            req.requestId
         );
       }
 

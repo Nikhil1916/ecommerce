@@ -20,6 +20,7 @@ export const errorHandler = (
       success: false,
       message: err.message,
       errors: err.errors,
+      requestId: req.requestId,
     });
     return;
   }

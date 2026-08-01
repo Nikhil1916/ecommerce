@@ -117,5 +117,15 @@ logoutAll = asyncHandler(async (req, res) => {
     );
 });
 
+getMe = asyncHandler(async (req, res) => {
+    res.status(200).json(
+        ApiResponse.success(
+            "User profile fetched successfully.",
+            req.user,
+            req.requestId
+        )
+    );
+});
+
   
 }

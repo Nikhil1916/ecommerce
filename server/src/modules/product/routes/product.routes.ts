@@ -3,6 +3,9 @@ import { ProductController } from "../controllers/product.controller";
 import { MongoCategoryRepository } from "../../category/repositories/mongo-category.repository";
 import { MongoProductRepository } from "../repositories/mongo-product.repository";
 import { ProductService } from "../services/product.service";
+import { authMiddleware } from "../../auth/auth.module";
+import { authorize } from "../../../middlewares/authorize.middleware";
+import { Role } from "@prisma/client";
 
 const router = Router();
 
@@ -28,6 +31,8 @@ router.post(
 
 router.get(
   "/:id",
+  authMiddleware.authenticate,
+  authorize(Role.ADMIN),
   productController.getProductById
 );
 
