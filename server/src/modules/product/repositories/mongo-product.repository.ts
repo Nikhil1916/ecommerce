@@ -1,5 +1,14 @@
-import { ProductModel, Product, CreateProductInput } from "../models/product.model";
+import { any } from "zod";
+import { ApiFeatures } from "../../../lib/mongo/api-features";
+import { ProductQueryDto } from "../dto/ProductQueryDto";
+import {
+  ProductModel,
+  Product,
+  CreateProductInput,
+} from "../models/product.model";
+import { PRODUCT_QUERY_CONFIG } from "../product.constants";
 import { IProductRepository } from "./product.repository";
+type MongoFilter = Record<string, unknown>;
 
 export class MongoProductRepository implements IProductRepository {
   async create(data: CreateProductInput): Promise<Product> {
@@ -16,12 +25,15 @@ export class MongoProductRepository implements IProductRepository {
 
   async findByName(name: string): Promise<Product | null> {
     return ProductModel.findOne({
-      name:new RegExp(`^${name}$`, "i"),
+      name: new RegExp(`^${name}$`, "i"),
       isActive: true,
     }).lean();
   }
 
-  async update(id: string, data: Partial<CreateProductInput>): Promise<Product | null> {
+  async update(
+    id: string,
+    data: Partial<CreateProductInput>,
+  ): Promise<Product | null> {
     const product = await ProductModel.findOne({
       _id: id,
       isActive: true,
@@ -63,5 +75,42 @@ export class MongoProductRepository implements IProductRepository {
       categoryId,
       isActive: true,
     }).lean();
+  }
+
+  async findAll(queryDto: ProductQueryDto): Promise<Product[]> {
+    const filters = this.buildFilters(queryDto);
+    const query = new ApiFeatures(ProductModel.find(filters), queryDto)
+      .active()
+      .search(PRODUCT_QUERY_CONFIG.searchableFields)
+      .sort(PRODUCT_QUERY_CONFIG.sortableFields)
+      .limitFields(PRODUCT_QUERY_CONFIG.selectableFields)
+      .paginate();
+
+    return query.getQuery();
+  }
+
+
+  private buildFilters(dto: ProductQueryDto): MongoFilter {
+    const filters: MongoFilter = {};
+
+    if (dto.categoryId) {
+      filters.categoryId = dto.categoryId;
+    }
+
+    if (dto.minPrice !== undefined || dto.maxPrice !== undefined) {
+      const priceFilter: Record<string, number> = {};
+
+      if (dto.minPrice !== undefined) {
+        priceFilter.$gte = dto.minPrice;
+      }
+
+      if (dto.maxPrice !== undefined) {
+        priceFilter.$lte = dto.maxPrice;
+      }
+
+      filters.price = priceFilter;
+    }
+
+    return filters;
   }
 }

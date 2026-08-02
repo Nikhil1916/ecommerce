@@ -10,6 +10,7 @@ export const validate =
     next: NextFunction
   ) => {
     try {
+      console.log(req.body, req.requestId, "check")
         const validatedData = await schema.parseAsync(req.body);
         req.body = validatedData;
         next();

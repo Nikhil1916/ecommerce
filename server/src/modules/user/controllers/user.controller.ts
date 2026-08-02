@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../../../core/asyncHandler";
 import { ApiResponse } from "../../../core/ApiResponse";
 import { UserService } from "../services/user.service";
+import { UpdateUserDto } from "../dto/user.types";
 
 export class UserController {
   constructor(
@@ -19,4 +20,22 @@ export class UserController {
       )
     );
   });
+
+  updateMe = asyncHandler(async (req: Request, res: Response) => {
+    const updatedUser = await this.userService.updateMe(
+      req.user!.id,
+      req.body as UpdateUserDto
+    );
+
+    res.status(200).json(
+      ApiResponse.success(
+        "Profile updated successfully.",
+        updatedUser,
+        req.requestId
+      )
+    );
+  });
+
+
+
 }
