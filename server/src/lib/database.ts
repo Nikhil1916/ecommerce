@@ -21,4 +21,9 @@ export const connectDatabase = async (): Promise<void> => {
     logger.fatal(error, "Failed to connect to MongoDB.");
     process.exit(1);
   }
+  
 };
+
+export async function disconnectMongo() {
+  await mongoose.connection.close();
+}
