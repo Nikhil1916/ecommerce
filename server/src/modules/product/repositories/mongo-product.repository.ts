@@ -8,6 +8,7 @@ import {
 } from "../models/product.model";
 import { PRODUCT_QUERY_CONFIG } from "../product.constants";
 import { IProductRepository } from "./product.repository";
+import { ProductListResult } from "../models/product.types";
 type MongoFilter = Record<string, unknown>;
 
 export class MongoProductRepository implements IProductRepository {
@@ -77,21 +78,52 @@ export class MongoProductRepository implements IProductRepository {
     }).lean();
   }
 
-  async findAll(queryDto: ProductQueryDto): Promise<Product[]> {
+  async findAll(queryDto: ProductQueryDto): Promise<ProductListResult> {
     const filters = this.buildFilters(queryDto);
-    const query = new ApiFeatures(ProductModel.find(filters), queryDto)
+    const searchFilter = this.buildSearchFilter(queryDto.search);
+    const query = new ApiFeatures(
+      ProductModel.find({
+        ...filters,
+        ...searchFilter,
+      }),
+      queryDto,
+    )
       .active()
-      .search(PRODUCT_QUERY_CONFIG.searchableFields)
+      // .search(PRODUCT_QUERY_CONFIG.searchableFields)
       .sort(PRODUCT_QUERY_CONFIG.sortableFields)
       .limitFields(PRODUCT_QUERY_CONFIG.selectableFields)
       .paginate();
 
-    return query.getQuery();
+    const page = Math.max(queryDto.page || 1, 1);
+    const limit = Math.max(queryDto.limit || 10, 1);
+
+    const [products, totalItems] = await Promise.all([
+      query.getQuery(),
+      ProductModel.countDocuments({
+        ...filters,
+        ...searchFilter,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return {
+      items: products,
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
-
   private buildFilters(dto: ProductQueryDto): MongoFilter {
-    const filters: MongoFilter = {};
+    const filters: MongoFilter = {
+      isActive: true,
+    };
 
     if (dto.categoryId) {
       filters.categoryId = dto.categoryId;
@@ -112,5 +144,24 @@ export class MongoProductRepository implements IProductRepository {
     }
 
     return filters;
+  }
+
+  private buildSearchFilter(search?: string): MongoFilter {
+    if (!search?.trim()) {
+      return {};
+    }
+
+    return {
+      $or: PRODUCT_QUERY_CONFIG.searchableFields.map((field) => ({
+        [field]: {
+          $regex: this.escapeRegex(search.trim()),
+          $options: "i",
+        },
+      })),
+    };
+  }
+
+  private escapeRegex(value: string) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 }

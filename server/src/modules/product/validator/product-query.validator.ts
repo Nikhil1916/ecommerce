@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Types } from "mongoose";
 
 export const ProductQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional(),
@@ -13,7 +14,13 @@ export const ProductQuerySchema = z.object({
 
   fields: z.string().trim().optional(),
 
-  categoryId: z.string().trim().optional(),
+categoryId: z
+  .string()
+  .refine(
+    (id) => Types.ObjectId.isValid(id),
+    "Invalid category id."
+  )
+  .optional(),
 
   minPrice: z.coerce.number().nonnegative().optional(),
 

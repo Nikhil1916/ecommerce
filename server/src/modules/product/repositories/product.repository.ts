@@ -1,4 +1,6 @@
+import { ProductQueryDto } from "../dto/ProductQueryDto";
 import { CreateProductInput, Product } from "../models/product.model";
+import { ProductListResult } from "../models/product.types";
 
 export interface IProductRepository {
   create(data: CreateProductInput): Promise<Product>;
@@ -19,4 +21,5 @@ export interface IProductRepository {
         categoryId: string
     ): Promise<Product | null>;
 
+    findAll(queryDto: ProductQueryDto): Promise<ProductListResult>;
 }

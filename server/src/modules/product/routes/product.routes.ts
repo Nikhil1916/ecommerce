@@ -6,6 +6,8 @@ import { ProductService } from "../services/product.service";
 import { authMiddleware } from "../../auth/auth.module";
 import { authorize } from "../../../middlewares/authorize.middleware";
 import { Role } from "@prisma/client";
+import { validate } from "../../../middlewares/validate.middleware";
+import { ProductQuerySchema } from "../validator/product-query.validator";
 
 const router = Router();
 
@@ -44,6 +46,13 @@ router.patch(
 router.delete(
   "/:id",
   productController.deleteProduct
+);
+
+
+router.get(
+  "/",
+  validate(ProductQuerySchema, "query"),
+  productController.getProducts
 );
 
 export default router;

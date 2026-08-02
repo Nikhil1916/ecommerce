@@ -1,24 +1,26 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError, ZodSchema } from "zod";
 import { ApiError } from "../core/ApiError";
+type ValidationTarget = "body" | "query" | "params";
 
 export const validate =
-  (schema: ZodSchema) =>
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  (schema: ZodSchema, target: ValidationTarget = "body") =>
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log(req.body, req.requestId, "check")
-        const validatedData = await schema.parseAsync(req.body);
+      const validatedData = await schema.parseAsync(req[target]);
+      if (target === "body") {
         req.body = validatedData;
-        next();
-    } catch(error) {
-        if (error instanceof ZodError) {
-          return next(new ApiError(400, "Validation failed", error.issues));
-        }
+      } else if (target === "params") {
+            Object.assign(req.params, validatedData);
+      } else {
+        Object.assign(req.query, validatedData);
+      }
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return next(new ApiError(400, "Validation failed", error.issues));
+      }
 
-        next(error);
+      next(error);
     }
   };

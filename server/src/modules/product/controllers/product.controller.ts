@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { CreateProductInput } from "../models/product.model";
 import { ProductService } from "../services/product.service";
+import { ApiResponse } from "../../../core/ApiResponse";
+import { ProductQueryDto } from "../dto/ProductQueryDto";
 
 export class ProductController {
   constructor(
@@ -81,4 +83,26 @@ export class ProductController {
       next(error);
     }
   };
+
+
+  getProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const result = await this.productService.getProducts(
+      req.query as ProductQueryDto
+    );
+
+    res.status(200).json(
+      ApiResponse.success(
+        "Products fetched successfully.",
+        result
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 }
