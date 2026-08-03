@@ -68,6 +68,12 @@ const productSchema = new Schema(
       index: true,
       trim: true,
     },
+    sku: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
   },
   {
     timestamps: true,

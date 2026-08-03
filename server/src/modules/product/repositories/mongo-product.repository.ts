@@ -10,12 +10,18 @@ import { PRODUCT_QUERY_CONFIG } from "../product.constants";
 import { IProductRepository } from "./product.repository";
 import { ProductListResult } from "../models/product.types";
 import { generateSlug } from "../../../utils/slug.utils";
+import { generateSKU } from "../../../utils/sku.util";
 type MongoFilter = Record<string, unknown>;
 
 export class MongoProductRepository implements IProductRepository {
   async create(data: CreateProductInput): Promise<Product> {
     const slug = await this.generateUniqueSlug(data.name);
-    const product = await ProductModel.create({ ...data, slug });
+
+    // TODO:
+    // Replace with CounterService using Mongo atomic $inc
+    // to avoid race conditions in concurrent requests.
+    const sku = await this.generateUniqueSKU();
+    const product = await ProductModel.create({ ...data, slug, sku });
     return product.toObject();
   }
 
@@ -25,7 +31,6 @@ export class MongoProductRepository implements IProductRepository {
       isActive: true,
     }).lean();
   }
-
 
   async findBySlug(slug: string): Promise<Product | null> {
     return ProductModel.findOne({
@@ -188,5 +193,21 @@ export class MongoProductRepository implements IProductRepository {
     }
 
     return slug;
+  }
+
+  private async generateUniqueSKU(): Promise<string> {
+    const latestProduct = await ProductModel.findOne()
+      .sort({
+        createdAt: -1,
+      })
+      .select("sku");
+
+    if (!latestProduct) {
+      return generateSKU(1);
+    }
+
+    const current = Number(latestProduct.sku.split("-")[1]);
+
+    return generateSKU(current + 1);
   }
 }
