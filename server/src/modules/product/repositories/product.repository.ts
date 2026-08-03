@@ -6,6 +6,7 @@ export interface IProductRepository {
   create(data: CreateProductInput): Promise<Product>;
 
   findById(id: string): Promise<Product | null>;
+  findBySlug(slug: string): Promise<Product | null>;
 
   findByName(name: string): Promise<Product | null>;
 

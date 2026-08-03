@@ -9,17 +9,27 @@ import {
 import { PRODUCT_QUERY_CONFIG } from "../product.constants";
 import { IProductRepository } from "./product.repository";
 import { ProductListResult } from "../models/product.types";
+import { generateSlug } from "../../../utils/slug.utils";
 type MongoFilter = Record<string, unknown>;
 
 export class MongoProductRepository implements IProductRepository {
   async create(data: CreateProductInput): Promise<Product> {
-    const product = await ProductModel.create(data);
+    const slug = await this.generateUniqueSlug(data.name);
+    const product = await ProductModel.create({ ...data, slug });
     return product.toObject();
   }
 
   async findById(id: string): Promise<Product | null> {
     return ProductModel.findOne({
       _id: id,
+      isActive: true,
+    }).lean();
+  }
+
+
+  async findBySlug(slug: string): Promise<Product | null> {
+    return ProductModel.findOne({
+      slug,
       isActive: true,
     }).lean();
   }
@@ -163,5 +173,20 @@ export class MongoProductRepository implements IProductRepository {
 
   private escapeRegex(value: string) {
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  private async generateUniqueSlug(name: string): Promise<string> {
+    const baseSlug = generateSlug(name);
+
+    let slug = baseSlug;
+
+    let counter = 1;
+
+    while (await ProductModel.exists({ slug })) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
+    return slug;
   }
 }

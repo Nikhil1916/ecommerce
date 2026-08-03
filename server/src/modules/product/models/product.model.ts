@@ -14,7 +14,7 @@ const imageSchema = new Schema(
   },
   {
     _id: false,
-  }
+  },
 );
 
 const productSchema = new Schema(
@@ -28,10 +28,10 @@ const productSchema = new Schema(
     },
 
     description: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 5000,
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 5000,
     },
 
     price: {
@@ -61,16 +61,23 @@ const productSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+      trim: true,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 import { Types } from "mongoose";
 
 export type Product = InferSchemaType<typeof productSchema> & {
-    _id: Types.ObjectId;
+  _id: Types.ObjectId;
 };
 
 export const ProductModel = model<Product>("Product", productSchema);

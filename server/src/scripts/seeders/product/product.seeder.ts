@@ -4,6 +4,7 @@ import { BaseSeeder } from "../base/base.seeder";
 import { SEED_CONFIG } from "../seed.config";
 import { ProductModel } from "../../../modules/product/models/product.model";
 import { CategoryModel } from "../../../modules/category/models/category.model";
+import { generateSlug } from "../../../utils/slug.utils";
 export class ProductSeeder extends BaseSeeder {
   async seed(): Promise<void> {
     const categories = await CategoryModel.find();
@@ -14,39 +15,42 @@ export class ProductSeeder extends BaseSeeder {
       );
     }
 
-    const products = Array.from(
-      { length: SEED_CONFIG.products },
-      () => ({
-        name: faker.commerce.productName(),
+const products = Array.from(
+  { length: SEED_CONFIG.products },
+  () => {
+    const name = faker.commerce.productName();
 
-        description:
-          faker.commerce.productDescription(),
+    return {
+      name,
+      slug: generateSlug(name),
 
-        price: Number(
-          faker.commerce.price({
-            min: 100,
-            max: 100000,
-          })
-        ),
+      description: faker.commerce.productDescription(),
 
-        stock: faker.number.int({
-          min: 0,
-          max: 500,
-        }),
+      price: Number(
+        faker.commerce.price({
+          min: 100,
+          max: 100000,
+        })
+      ),
 
-        categoryId:
-          faker.helpers.arrayElement(categories)._id,
+      stock: faker.number.int({
+        min: 0,
+        max: 500,
+      }),
 
-        images: [
-          {
-            url: faker.image.urlPicsumPhotos(),
-            alt: faker.commerce.productName(),
-          },
-        ],
+      categoryId: faker.helpers.arrayElement(categories)._id,
 
-        isActive: true,
-      })
-    );
+      images: [
+        {
+          url: faker.image.urlPicsumPhotos(),
+          alt: name,
+        },
+      ],
+
+      isActive: true,
+    };
+  }
+);
 
     await this.clear(ProductModel);
     await this.insertMany(ProductModel, products);

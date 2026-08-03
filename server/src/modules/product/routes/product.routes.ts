@@ -8,6 +8,7 @@ import { authorize } from "../../../middlewares/authorize.middleware";
 import { Role } from "@prisma/client";
 import { validate } from "../../../middlewares/validate.middleware";
 import { ProductQuerySchema } from "../validator/product-query.validator";
+import { ProductSlugSchema } from "../validator/product-slug.validator";
 
 const router = Router();
 
@@ -30,6 +31,13 @@ router.post(
   "/",
   productController.createProduct
 );
+
+router.get(
+  "/slug/:slug",
+  validate(ProductSlugSchema, "params"),
+  productController.getProductBySlug
+);
+
 
 router.get(
   "/:id",

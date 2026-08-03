@@ -5,19 +5,15 @@ import { ApiResponse } from "../../../core/ApiResponse";
 import { ProductQueryDto } from "../dto/ProductQueryDto";
 
 export class ProductController {
-  constructor(
-    private readonly productService: ProductService
-  ) {}
+  constructor(private readonly productService: ProductService) {}
 
   createProduct = async (
     req: Request<{}, {}, CreateProductInput>,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
-      const product = await this.productService.createProduct(
-        req.body
-      );
+      const product = await this.productService.createProduct(req.body);
 
       return res.status(201).json({
         success: true,
@@ -31,12 +27,10 @@ export class ProductController {
   getProductById = async (
     req: Request<{ id: string }>,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
-      const product = await this.productService.getProductById(
-        req.params.id
-      );
+      const product = await this.productService.getProductById(req.params.id);
 
       return res.status(200).json({
         success: true,
@@ -50,12 +44,12 @@ export class ProductController {
   updateProduct = async (
     req: Request<{ id: string }, {}, Partial<CreateProductInput>>,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const product = await this.productService.updateProduct(
         req.params.id,
-        req.body
+        req.body,
       );
 
       return res.status(200).json({
@@ -70,7 +64,7 @@ export class ProductController {
   deleteProduct = async (
     req: Request<{ id: string }>,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       await this.productService.deleteProduct(req.params.id);
@@ -84,25 +78,39 @@ export class ProductController {
     }
   };
 
-
   getProducts = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const result = await this.productService.getProducts(
-      req.query as ProductQueryDto
-    );
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const result = await this.productService.getProducts(
+        req.query as ProductQueryDto,
+      );
 
-    res.status(200).json(
-      ApiResponse.success(
-        "Products fetched successfully.",
-        result
-      )
-    );
-  } catch (error) {
-    next(error);
-  }
-};
+      res
+        .status(200)
+        .json(ApiResponse.success("Products fetched successfully.", result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getProductBySlug = async (
+    req: Request<{ slug: string }>,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const product = await this.productService.getProductBySlug(
+        req.params.slug,
+      );
+
+      res
+        .status(200)
+        .json(ApiResponse.success("Product fetched successfully.", product));
+    } catch (error) {
+      next(error);
+    }
+  };
 }

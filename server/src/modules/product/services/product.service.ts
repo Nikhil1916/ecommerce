@@ -9,25 +9,20 @@ import { IProductRepository } from "../repositories/product.repository";
 export class ProductService {
   constructor(
     private readonly productRepository: IProductRepository,
-    private readonly categoryRepository: ICategoryRepository
+    private readonly categoryRepository: ICategoryRepository,
   ) {}
 
-  async createProduct(
-    data: CreateProductInput
-  ): Promise<Product> {
-    const category = await this.categoryRepository.findById(
-      data.categoryId
-    );
+  async createProduct(data: CreateProductInput): Promise<Product> {
+    const category = await this.categoryRepository.findById(data.categoryId);
 
     if (!category) {
       throw new ApiError(404, "Category not found");
     }
 
-    const existingProduct =
-      await this.productRepository.findByNameAndCategory(
-        data.name,
-        data.categoryId
-      );
+    const existingProduct = await this.productRepository.findByNameAndCategory(
+      data.name,
+      data.categoryId,
+    );
 
     if (existingProduct) {
       throw new ApiError(409, "Product already exists");
@@ -36,11 +31,8 @@ export class ProductService {
     return this.productRepository.create(data);
   }
 
-  async getProductById(
-    id: string
-  ): Promise<Product> {
-    const product =
-      await this.productRepository.findById(id);
+  async getProductById(id: string): Promise<Product> {
+    const product = await this.productRepository.findById(id);
 
     if (!product) {
       throw new ApiError(404, "Product not found");
@@ -51,10 +43,9 @@ export class ProductService {
 
   async updateProduct(
     id: string,
-    data: Partial<CreateProductInput>
+    data: Partial<CreateProductInput>,
   ): Promise<Product> {
-    const existingProduct =
-      await this.productRepository.findById(id);
+    const existingProduct = await this.productRepository.findById(id);
 
     if (!existingProduct) {
       throw new Error("Product not found");
@@ -65,10 +56,7 @@ export class ProductService {
       data.categoryId &&
       data.categoryId !== existingProduct.categoryId.toString()
     ) {
-      const category =
-        await this.categoryRepository.findById(
-          data.categoryId
-        );
+      const category = await this.categoryRepository.findById(data.categoryId);
 
       if (!category) {
         throw new Error("Category not found");
@@ -77,24 +65,18 @@ export class ProductService {
 
     // Duplicate check only if name/category changes
     if (data.name || data.categoryId) {
-      const duplicate =
-        await this.productRepository.findByNameAndCategory(
-          data.name ?? existingProduct.name,
-          data.categoryId ??
-            existingProduct.categoryId.toString()
-        );
+      const duplicate = await this.productRepository.findByNameAndCategory(
+        data.name ?? existingProduct.name,
+        data.categoryId ?? existingProduct.categoryId.toString(),
+      );
 
       // Ignore current product
-      if (
-        duplicate &&
-        duplicate._id.toString() !== id
-      ) {
+      if (duplicate && duplicate._id.toString() !== id) {
         throw new Error("Product already exists");
       }
     }
 
-    const updated =
-      await this.productRepository.update(id, data);
+    const updated = await this.productRepository.update(id, data);
 
     if (!updated) {
       throw new ApiError(500, "Failed to update product");
@@ -103,11 +85,8 @@ export class ProductService {
     return updated;
   }
 
-  async deleteProduct(
-    id: string
-  ): Promise<boolean> {
-    const product =
-      await this.productRepository.findById(id);
+  async deleteProduct(id: string): Promise<boolean> {
+    const product = await this.productRepository.findById(id);
 
     if (!product) {
       throw new Error("Product not found");
@@ -116,9 +95,17 @@ export class ProductService {
     return this.productRepository.delete(id);
   }
 
-  async getProducts(
-    dto: ProductQueryDto
-  ): Promise<ProductListResult> {
+  async getProducts(dto: ProductQueryDto): Promise<ProductListResult> {
     return this.productRepository.findAll(dto);
+  }
+
+  async getProductBySlug(slug: string): Promise<Product> {
+    const product = await this.productRepository.findBySlug(slug);
+
+    if (!product) {
+      throw new ApiError(404, "Product not found.");
+    }
+
+    return product;
   }
 }
