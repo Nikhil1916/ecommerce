@@ -45,7 +45,11 @@ const productSchema = new Schema(
       default: 0,
       min: [0, "Stock cannot be negative"],
     },
-
+    reservedStock: {
+      type: Number,
+      default: 0,
+      min: [0, "Reserved stock cannot be negative"],
+    },
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "Category",
