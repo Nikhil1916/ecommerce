@@ -11,6 +11,7 @@ import { ProductQuerySchema } from "../validator/product-query.validator";
 import { ProductSlugSchema } from "../validator/product-slug.validator";
 import { upload } from "../../../storage/multer/multer.config";
 import { CloudinaryProvider } from "../../../storage/providers/cloudinary.provider";
+import { createProductSchema } from "../validator/create-product.validation";
 
 const router = Router();
 
@@ -37,7 +38,7 @@ router.post(
   authMiddleware.authenticate,
   authorize(Role.ADMIN),
   upload.single("image"),
-  // validate(CreateProductSchema, "body"),  
+  validate(createProductSchema, "body"),  
   productController.createProduct
 );
 
