@@ -9,6 +9,8 @@ import { Role } from "@prisma/client";
 import { validate } from "../../../middlewares/validate.middleware";
 import { ProductQuerySchema } from "../validator/product-query.validator";
 import { ProductSlugSchema } from "../validator/product-slug.validator";
+import { upload } from "../../../storage/multer/multer.config";
+import { CloudinaryProvider } from "../../../storage/providers/cloudinary.provider";
 
 const router = Router();
 
@@ -18,10 +20,13 @@ const productRepository =
 const categoryRepository =
   new MongoCategoryRepository();
 
+const storageProvider = new CloudinaryProvider();
+
 const productService =
   new ProductService(
     productRepository,
-    categoryRepository
+    categoryRepository,
+    storageProvider
   );
 
 const productController =
@@ -29,6 +34,10 @@ const productController =
 
 router.post(
   "/",
+  authMiddleware.authenticate,
+  authorize(Role.ADMIN),
+  upload.single("image"),
+  // validate(CreateProductSchema, "body"),  
   productController.createProduct
 );
 

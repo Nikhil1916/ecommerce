@@ -3,4 +3,5 @@ node_modules
 .agents
 .claude
 .windsurf
+env
 .env

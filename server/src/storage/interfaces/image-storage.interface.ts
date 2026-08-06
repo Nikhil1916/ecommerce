@@ -1,14 +1,5 @@
-export interface UploadResult {
-  url: string;
-  key: string;
-}
-
-export interface UploadFile {
-  buffer: Buffer;
-  mimetype: string;
-  originalname: string;
-  size: number;
-}
+import { UploadFile } from "../dto/upload-file.dto";
+import { UploadResult } from "../dto/upload-result.dto";
 
 export interface ImageStorage {
   upload(

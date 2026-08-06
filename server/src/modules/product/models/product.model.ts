@@ -7,6 +7,11 @@ const imageSchema = new Schema(
       required: true,
       trim: true,
     },
+    key: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     alt: {
       type: String,
       trim: true,
@@ -92,9 +97,9 @@ export type Product = InferSchemaType<typeof productSchema> & {
 
 export const ProductModel = model<Product>("Product", productSchema);
 
-export type CreateProductInput = Omit<
-  Product,
-  "_id" | "createdAt" | "updatedAt" | "isActive" | "categoryId"
-> & {
-  categoryId: string;
-};
+// export type CreateProductInput = Omit<
+//   Product,
+//   "_id" | "createdAt" | "updatedAt" | "isActive" | "categoryId"
+// > & {
+//   categoryId: string;
+// };

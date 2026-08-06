@@ -1,8 +1,12 @@
 import { ApiError } from "../../../core/ApiError";
+import logger from "../../../lib/logger";
+import { UploadFile } from "../../../storage/dto/upload-file.dto";
+import { UploadResult } from "../../../storage/dto/upload-result.dto";
+import { ImageStorage } from "../../../storage/interfaces/image-storage.interface";
 import { ICategoryRepository } from "../../category/repositories/category.repository";
 import { ProductQueryDto } from "../dto/ProductQueryDto";
-import { Product, CreateProductInput } from "../models/product.model";
-import { ProductListResult } from "../models/product.types";
+import { Product } from "../models/product.model";
+import { CreateProductInput, ProductListResult } from "../models/product.types";
 // import { ICategoryRepository } from "../repositories/category.repository";
 import { IProductRepository } from "../repositories/product.repository";
 
@@ -10,25 +14,65 @@ export class ProductService {
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly categoryRepository: ICategoryRepository,
+    private readonly storageProvider: ImageStorage,
   ) {}
 
-  async createProduct(data: CreateProductInput): Promise<Product> {
-    const category = await this.categoryRepository.findById(data.categoryId);
+  async createProduct(
+    data: CreateProductInput,
+    file?: UploadFile,
+  ): Promise<Product> {
+    let image: UploadResult | undefined;
+    try {
+      const category = await this.categoryRepository.findById(data.categoryId);
 
-    if (!category) {
-      throw new ApiError(404, "Category not found");
+      if (!category) {
+        throw new ApiError(404, "Category not found");
+      }
+
+      const existingProduct =
+        await this.productRepository.findByNameAndCategory(
+          data.name,
+          data.categoryId,
+        );
+      if (existingProduct) {
+        throw new ApiError(409, "Product already exists");
+      }
+
+      if (file) {
+        image = await this.storageProvider.upload(file);
+      }
+
+      const productData: CreateProductInput = {
+        ...data,
+        images: image
+          ? [
+              {
+                url: image.url,
+                key: image.key,
+                alt: data.name,
+              },
+            ]
+          : [],
+      };
+
+      return this.productRepository.create(productData);
+    } catch (error) {
+      if (image) {
+        try {
+          await this.storageProvider.delete(image.key);
+        } catch (deleteError) {
+          // TODO: log this
+          logger.error(
+            {
+              error: deleteError,
+              imageKey: image.key,
+            },
+            `Failed to delete uploaded image after product creation failure`,
+          );
+        }
+      }
+      throw error;
     }
-
-    const existingProduct = await this.productRepository.findByNameAndCategory(
-      data.name,
-      data.categoryId,
-    );
-
-    if (existingProduct) {
-      throw new ApiError(409, "Product already exists");
-    }
-
-    return this.productRepository.create(data);
   }
 
   async getProductById(id: string): Promise<Product> {

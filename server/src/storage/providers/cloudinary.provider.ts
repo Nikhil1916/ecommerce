@@ -1,22 +1,40 @@
+import { Readable } from "stream";
+
 import cloudinary from "../config/cloudinary";
-import {
-  ImageStorage,
-  UploadFile,
-  UploadResult,
-} from "../interfaces/image-storage.interface";
 
-export class CloudinaryProvider
-  implements ImageStorage
-{
-  async upload(file: UploadFile): Promise<UploadResult> {
-    const result = await cloudinary.uploader.upload(file.path, {
-      folder: "ecommerce",
+import { ImageStorage } from "../interfaces/image-storage.interface";
+import { UploadFile } from "../dto/upload-file.dto";
+import { UploadResult } from "../dto/upload-result.dto";
+
+export class CloudinaryProvider implements ImageStorage {
+  upload(file: UploadFile): Promise<UploadResult> {
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: "images" },
+        (error, result) => {
+          if (error) {
+            reject(error);
+            return;
+          } 
+
+          if(result)
+           {
+            resolve({
+              url: result?.secure_url || "",
+              key: result?.public_id || "",
+            });
+            return;
+          }
+
+          if(!result) {
+            reject(new Error("Upload failed: No result returned from Cloudinary."));
+            return ;
+          }
+        }
+      );
+
+      Readable.from(file.buffer).pipe(uploadStream);
     });
-
-    return {
-      url: result.secure_url,
-      key: result.public_id,
-    };
   }
 
   async delete(key: string): Promise<void> {

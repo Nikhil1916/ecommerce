@@ -3,6 +3,7 @@ import { CreateProductInput } from "../models/product.model";
 import { ProductService } from "../services/product.service";
 import { ApiResponse } from "../../../core/ApiResponse";
 import { ProductQueryDto } from "../dto/ProductQueryDto";
+import { UploadFile } from "../../../storage/dto/upload-file.dto";
 
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -13,7 +14,15 @@ export class ProductController {
     next: NextFunction,
   ) => {
     try {
-      const product = await this.productService.createProduct(req.body);
+      const file: UploadFile | undefined = req.file
+        ? {
+            buffer: req.file.buffer,
+            mimetype: req.file.mimetype,
+            originalname: req.file.originalname,
+            size: req.file.size,
+          }
+        : undefined;
+      const product = await this.productService.createProduct(req.body, file);
 
       return res.status(201).json({
         success: true,

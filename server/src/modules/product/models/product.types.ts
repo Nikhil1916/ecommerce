@@ -28,3 +28,19 @@ export interface ProductListResult  {
   items: Product[];
   pagination: PaginationDto;
 }
+
+export interface CreateProductInput {
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  categoryId: string;
+  slug: string;
+  sku: string;
+
+  images: {
+    url: string;
+    key: string;
+    alt?: string;
+  }[];
+}
