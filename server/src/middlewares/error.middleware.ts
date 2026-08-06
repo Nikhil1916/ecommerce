@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 import { ApiError } from "../core/ApiError";
+import multer from "multer";
+import { PRODUCT_UPLOAD } from "../storage/constants/upload.constants";
 
 export const errorHandler = (
   err: unknown,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
-
-    // Unknown Errors
-    console.error("RequestId:", req.requestId);
+  // Unknown Errors
+  console.error("RequestId:", req.requestId);
   console.error(err);
-
 
   // Business Errors
   if (err instanceof ApiError) {
@@ -23,6 +23,37 @@ export const errorHandler = (
       requestId: req.requestId,
     });
     return;
+  }
+
+  if (err instanceof multer.MulterError) {
+    switch (err.code) {
+      case "LIMIT_FILE_SIZE":
+        res.status(400).json({
+          success: false,
+          message: `Image size cannot exceed ${PRODUCT_UPLOAD.MAX_SIZE_LABEL} MB.`,
+          errors: [err.message],
+          requestId: req.requestId,
+        });
+        return;
+
+      case "LIMIT_UNEXPECTED_FILE":
+        res.status(400).json({
+          success: false,
+          message: `only ${PRODUCT_UPLOAD.MAX_FILES} image is allowed`,
+          errors: [err.message],
+          requestId: req.requestId,
+        });
+        return;
+
+      default:
+        res.status(400).json({
+          success: false,
+          message: err.message,
+          errors: [err.message],
+          requestId: req.requestId,
+        });
+        return;
+    }
   }
 
   // Validation Errors

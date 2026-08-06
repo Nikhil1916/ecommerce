@@ -12,6 +12,7 @@ import { ProductSlugSchema } from "../validator/product-slug.validator";
 import { upload } from "../../../storage/multer/multer.config";
 import { CloudinaryProvider } from "../../../storage/providers/cloudinary.provider";
 import { createProductSchema } from "../validator/create-product.validation";
+import { PRODUCT_UPLOAD } from "../../../storage/constants/upload.constants";
 
 const router = Router();
 
@@ -37,7 +38,7 @@ router.post(
   "/",
   authMiddleware.authenticate,
   authorize(Role.ADMIN),
-  upload.single("image"),
+  upload.array(PRODUCT_UPLOAD.FIELD_NAME, PRODUCT_UPLOAD.MAX_FILES),
   validate(createProductSchema, "body"),  
   productController.createProduct
 );

@@ -1,5 +1,6 @@
 import { FileFilterCallback } from "multer";
 import { Request } from "express";
+import { ApiError } from "../../core/ApiError";
 
 const allowedMimeTypes = ["image/png", "image/jpeg", "image/webp"];
 
@@ -9,7 +10,10 @@ export const imageFileFilter = (
   callback: FileFilterCallback,
 ) => {
   if (!allowedMimeTypes.includes(file.mimetype)) {
-    callback(new Error("Only images are allowed."));
+    callback(new ApiError(
+    400,
+    "Only JPG, PNG and WEBP images are allowed."
+  ));
 
     return;
   }

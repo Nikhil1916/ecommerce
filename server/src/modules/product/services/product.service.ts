@@ -19,9 +19,10 @@ export class ProductService {
 
   async createProduct(
     data: CreateProductInput,
-    file?: UploadFile,
+    files: UploadFile[] = [],
   ): Promise<Product> {
-    let image: UploadResult | undefined;
+    // let image: UploadResult | undefined;
+    let uploadedImages: UploadResult[] = [];
     try {
       const category = await this.categoryRepository.findById(data.categoryId);
 
@@ -38,36 +39,40 @@ export class ProductService {
         throw new ApiError(409, "Product already exists");
       }
 
-      if (file) {
-        image = await this.storageProvider.upload(file);
+      if (files.length > 0) {
+        uploadedImages = await Promise.all(
+          files.map((file)=>
+             this.storageProvider.upload(file)
+          )
+        )
+        // image = await this.storageProvider.upload(file);
       }
 
       const productData: CreateProductInput = {
         ...data,
-        images: image
-          ? [
-              {
-                url: image.url,
-                key: image.key,
-                alt: data.name,
-              },
-            ]
-          : [],
+        images: uploadedImages.map((image) => ({
+          url: image.url,
+          key: image.key,
+          alt: data.name,
+        })),
       };
 
       return this.productRepository.create(productData);
     } catch (error) {
-      if (image) {
+      if (uploadedImages?.length > 0) {
+        let results:any = [];
         try {
-          await this.storageProvider.delete(image.key);
+           results = await Promise.allSettled(uploadedImages.map((image)=>
+             this.storageProvider.delete(image.key) 
+          ))
         } catch (deleteError) {
           // TODO: log this
           logger.error(
             {
               error: deleteError,
-              imageKey: image.key,
+              results,
             },
-            `Failed to delete uploaded image after product creation failure`,
+            "Failed to rollback uploaded images.",
           );
         }
       }

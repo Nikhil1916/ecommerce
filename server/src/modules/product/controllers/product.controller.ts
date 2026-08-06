@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { CreateProductInput } from "../models/product.model";
+// import { CreateProductInput } from "../models/product.model";
 import { ProductService } from "../services/product.service";
 import { ApiResponse } from "../../../core/ApiResponse";
 import { ProductQueryDto } from "../dto/ProductQueryDto";
 import { UploadFile } from "../../../storage/dto/upload-file.dto";
+import { CreateProductInput } from "../models/product.types";
 
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -14,15 +15,15 @@ export class ProductController {
     next: NextFunction,
   ) => {
     try {
-      const file: UploadFile | undefined = req.file
-        ? {
-            buffer: req.file.buffer,
-            mimetype: req.file.mimetype,
-            originalname: req.file.originalname,
-            size: req.file.size,
-          }
-        : undefined;
-      const product = await this.productService.createProduct(req.body, file);
+      const files: UploadFile[] = (
+        (req.files as Express.Multer.File[]) ?? []
+      ).map((file) => ({
+        buffer: file.buffer,
+        mimetype: file.mimetype,
+        originalname: file.originalname,
+        size: file.size,
+      }));
+      const product = await this.productService.createProduct(req.body, files);
 
       return res.status(201).json({
         success: true,
