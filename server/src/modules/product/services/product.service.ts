@@ -1,5 +1,7 @@
 import { ApiError } from "../../../core/ApiError";
 import logger from "../../../lib/logger";
+import { CacheKeys } from "../../../redis/cache-keys";
+import { RedisService } from "../../../redis/services/redis.service";
 import { UploadFile } from "../../../storage/dto/upload-file.dto";
 import { UploadResult } from "../../../storage/dto/upload-result.dto";
 import { ImageStorage } from "../../../storage/interfaces/image-storage.interface";
@@ -15,6 +17,7 @@ export class ProductService {
     private readonly productRepository: IProductRepository,
     private readonly categoryRepository: ICategoryRepository,
     private readonly storageProvider: ImageStorage,
+    private readonly redisService: RedisService,
   ) {}
 
   async createProduct(
@@ -81,12 +84,23 @@ export class ProductService {
   }
 
   async getProductById(id: string): Promise<Product> {
+    const cacheKey = CacheKeys.product(id);
+    console.log("cache");
+    const cachedProduct = await this.redisService.get<Product>(cacheKey);
+    if (cachedProduct) {
+      logger.info("Cache Hit");
+       return cachedProduct;
+    }
     const product = await this.productRepository.findById(id);
 
     if (!product) {
       throw new ApiError(404, "Product not found");
     }
-
+    await this.redisService.set(
+        cacheKey,
+        product,
+    );
+    logger.info("Cache Miss");
     return product;
   }
 
@@ -131,6 +145,8 @@ export class ProductService {
       throw new ApiError(500, "Failed to update product");
     }
 
+    await this.redisService.del(`product:${id}`);
+
     return updated;
   }
 
@@ -141,6 +157,7 @@ export class ProductService {
       throw new Error("Product not found");
     }
 
+    await this.redisService.del(`product:${id}`);
     return this.productRepository.delete(id);
   }
 

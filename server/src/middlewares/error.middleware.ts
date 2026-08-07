@@ -3,6 +3,7 @@ import { ZodError } from "zod";
 import { ApiError } from "../core/ApiError";
 import multer from "multer";
 import { PRODUCT_UPLOAD } from "../storage/constants/upload.constants";
+import logger from "../lib/logger";
 
 export const errorHandler = (
   err: unknown,
@@ -11,9 +12,15 @@ export const errorHandler = (
   next: NextFunction,
 ): void => {
   // Unknown Errors
-  console.error("RequestId:", req.requestId);
-  console.error(err);
-
+    logger.error(
+      {
+        error: err,
+        requestId: req.requestId,
+        method: req.method,
+        url: req.originalUrl,
+      },
+      "Unhandled exception",
+    );
   // Business Errors
   if (err instanceof ApiError) {
     res.status(err.statusCode).json({

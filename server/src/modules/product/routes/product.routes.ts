@@ -13,6 +13,7 @@ import { upload } from "../../../storage/multer/multer.config";
 import { CloudinaryProvider } from "../../../storage/providers/cloudinary.provider";
 import { createProductSchema } from "../validator/create-product.validation";
 import { PRODUCT_UPLOAD } from "../../../storage/constants/upload.constants";
+import { RedisService } from "../../../redis/services/redis.service";
 
 const router = Router();
 
@@ -28,7 +29,8 @@ const productService =
   new ProductService(
     productRepository,
     categoryRepository,
-    storageProvider
+    storageProvider,
+    new RedisService()
   );
 
 const productController =
