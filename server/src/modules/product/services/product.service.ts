@@ -144,8 +144,8 @@ export class ProductService {
     if (!updated) {
       throw new ApiError(500, "Failed to update product");
     }
-
-    await this.redisService.del(`product:${id}`);
+    const cacheKey = CacheKeys.product(id);
+    await this.redisService.del(cacheKey);
 
     return updated;
   }
@@ -157,7 +157,8 @@ export class ProductService {
       throw new Error("Product not found");
     }
 
-    await this.redisService.del(`product:${id}`);
+    const cacheKey = CacheKeys.product(id);
+    await this.redisService.del(cacheKey);
     return this.productRepository.delete(id);
   }
 
