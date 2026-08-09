@@ -132,4 +132,60 @@ export class MongoCartRespository implements ICartRepository {
 
     return result[0] ?? null;
   }
+
+  async removeItem(userId: string, productId: string): Promise<Cart | null> {
+    return CartModel.findOneAndUpdate(
+      {
+        userId,
+        "items.productId": productId,
+      },
+      {
+        $pull: {
+          items: {
+            productId,
+          },
+        },
+      },
+      {
+        new: true,
+      },
+    );
+  }
+
+  async updateItemQuantity(
+    userId: string,
+    productId: string,
+    quantity: number,
+  ): Promise<Cart | null> {
+    return CartModel.findOneAndUpdate(
+      {
+        userId,
+        "items.productId": productId,
+      },
+      {
+        $set: {
+          "items.$.quantity": quantity,
+        },
+      },
+      {
+        new: true,
+      },
+    );
+  }
+
+  async clearCart(userId: string): Promise<Cart | null> {
+    return CartModel.findOneAndUpdate(
+      {
+        userId,
+      },
+      {
+        $set: {
+          items: [],
+        },
+      },
+      {
+        new: true,
+      },
+    );
+  }
 }

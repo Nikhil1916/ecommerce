@@ -10,26 +10,26 @@ export class CartService {
   ) {}
 
   async getCart(userId: string): Promise<CartWithProducts | Cart> {
-  const cart = await this.cartRepository.findByUserId(userId);
+    const cart = await this.cartRepository.findByUserId(userId);
 
-  if (!cart) {
-    const newCart = await this.cartRepository.create(userId);
-    return newCart;
+    if (!cart) {
+      const newCart = await this.cartRepository.create(userId);
+      return newCart;
+    }
+
+    if (cart.items.length === 0) {
+      return cart;
+    }
+
+    const cartWithProducts =
+      await this.cartRepository.getCartWithProducts(userId);
+
+    if (!cartWithProducts) {
+      throw new ApiError(500, "Failed to fetch cart");
+    }
+
+    return cartWithProducts;
   }
-
-  if (cart.items.length === 0) {
-    return cart;
-  }
-
-  const cartWithProducts =
-    await this.cartRepository.getCartWithProducts(userId);
-
-  if (!cartWithProducts) {
-    throw new ApiError(500, "Failed to fetch cart");
-  }
-
-  return cartWithProducts;
-} 
 
   async addToCart(
     userId: string,
@@ -91,5 +91,53 @@ export class CartService {
     }
 
     return updatedCart;
+  }
+
+  async removeFromCart(userId: string, productId: string): Promise<Cart> {
+    const updatedCart = await this.cartRepository.removeItem(userId, productId);
+
+    if (!updatedCart) {
+      throw new ApiError(404, "Cart item not found");
+    }
+
+    return updatedCart;
+  }
+
+  async updateCartItem(
+    userId: string,
+    productId: string,
+    quantity: number,
+  ): Promise<Cart> {
+    const product = await this.productRepository.findById(productId);
+
+    if (!product) {
+      throw new ApiError(404, "Product not found");
+    }
+
+    if (quantity > product.stock) {
+      throw new ApiError(400, "Insufficient stock");
+    }
+
+    const updatedCart = await this.cartRepository.updateItemQuantity(
+      userId,
+      productId,
+      quantity,
+    );
+
+    if (!updatedCart) {
+      throw new ApiError(404, "Cart item not found");
+    }
+
+    return updatedCart;
+  }
+
+  async clearCart(userId: string): Promise<Cart> {
+    const cart = await this.cartRepository.clearCart(userId);
+
+    if (!cart) {
+      throw new ApiError(404, "Cart not found");
+    }
+
+    return cart;
   }
 }

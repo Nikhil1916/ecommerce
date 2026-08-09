@@ -19,4 +19,14 @@ export interface ICartRepository {
   clear(userId: string): Promise<Cart | null>;
 
   getCartWithProducts(userId: string): Promise<CartWithProducts | null>;
+
+  removeItem(userId: string, productId: string): Promise<Cart | null>;
+
+  updateItemQuantity(
+    userId: string,
+    productId: string,
+    quantity: number,
+  ): Promise<Cart | null>;
+
+  clearCart(userId: string): Promise<Cart | null>;
 }
