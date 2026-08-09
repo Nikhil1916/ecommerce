@@ -1,4 +1,5 @@
 import { InferSchemaType, model, Schema, Types } from "mongoose";
+import { Product } from "../../product/models/product.model";
 
 const cartItemSchema = new Schema(
   {
@@ -42,3 +43,12 @@ export type Cart = InferSchemaType<typeof cartSchema> & {
   _id: Types.ObjectId;
 };
 export const CartModel = model<Cart>("Cart", cartSchema);
+
+
+export type CartWithProducts = Cart & {
+  items: Array<
+    Cart["items"][number] & {
+      product: Product;
+    }
+  >;
+};

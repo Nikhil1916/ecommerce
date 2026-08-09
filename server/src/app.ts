@@ -10,6 +10,7 @@ import { authRouter } from "./modules/auth/auth.module";
 import cookieParser from "cookie-parser";
 import { userRouter } from "./modules/user/user.module";
 import { inventoryRoutes } from "./modules/inventory/inventory.module";
+import { cartRouter } from "./modules/cart/routes/cart.routes";
 const app = express();
 
 app.use(requestId);
@@ -31,6 +32,7 @@ app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/inventory", inventoryRoutes);
+app.use("/api/v1/cart", cartRouter)
 
 // 404 Middleware
 app.use(notFoundHandler);
