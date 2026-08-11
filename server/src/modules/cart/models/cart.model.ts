@@ -44,10 +44,14 @@ export type Cart = InferSchemaType<typeof cartSchema> & {
 };
 export const CartModel = model<Cart>("Cart", cartSchema);
 
+export type CartItem = {
+  productId: Types.ObjectId;
+  quantity: number;
+};
 
-export type CartWithProducts = Cart & {
+export type CartWithProducts = Omit<Cart, "items"> & {
   items: Array<
-    Cart["items"][number] & {
+    CartItem & {
       product: Product;
     }
   >;

@@ -2,11 +2,13 @@ import { ApiError } from "../../../core/ApiError";
 import { ICartRepository } from "../../cart/repositories/cart.repository";
 import { UpdateInventoryDto } from "../../inventory/dto/inventory.dto";
 import { IInventoryRepository } from "../../inventory/interfaces/inventory.repository.interface";
+import { OrderService } from "../../order/service/order.service";
 
 export class CheckoutService {
   constructor(
     private cartRepository: ICartRepository,
     private inventoryRepository: IInventoryRepository,
+    private orderService: OrderService,
   ) {}
 
   async startCheckout(userId: string) {
@@ -40,8 +42,25 @@ export class CheckoutService {
       reservedItems.push(reservation);
     }
 
-    return {
-      message: "Stock reserved successfully",
-    };
+    try {
+      const order = await this.orderService.createOrder(
+        userId,
+        cart.items.map((item) => ({
+          productId: item.productId.toString(),
+          name: item.product.name,
+          price: item.product.price,
+          quantity: item.quantity,
+          subtotal: item.product.price * item.quantity,
+        })),
+      );
+
+      return order;
+    } catch (error) {
+      for (const reservedItem of reservedItems) {
+        await this.inventoryRepository.releaseStock(reservedItem);
+      }
+
+      throw error;
+    }
   }
 }
