@@ -6,7 +6,7 @@ import { connectRedis } from "./redis/config/redis.config";
 
 const startServer = async (): Promise<void> => {
   try {
-    await connectRedis();
+    connectRedis();
 
     await connectDatabase();
 

@@ -33,17 +33,15 @@ redisClient.on("error", (error) => {
   );
 });
 
-export async function connectRedis(): Promise<void> {
-  try {
-    await redisClient.connect();
-  } catch (error) {
+export function connectRedis(): void {
+  redisClient.connect().catch((error) => {
     logger.error(
       {
         error,
       },
       "Failed to connect Redis. Continuing without cache.",
     );
-  }
+  });
 }
 
 export function isRedisConnected(): boolean {
