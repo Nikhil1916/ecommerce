@@ -12,6 +12,7 @@ import { userRouter } from "./modules/user/user.module";
 import { inventoryRoutes } from "./modules/inventory/inventory.module";
 import { cartRouter } from "./modules/cart/routes/cart.routes";
 import { checkoutRouter } from "./modules/checkout/routes/checkout.routes";
+import { paymentRouter } from "./modules/payment/routes/payment.routes";
 const app = express();
 
 app.use(requestId);
@@ -35,7 +36,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/inventory", inventoryRoutes);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/checkout", checkoutRouter);
-
+app.use("/api/v1/payment", paymentRouter)
 // 404 Middleware
 app.use(notFoundHandler);
 

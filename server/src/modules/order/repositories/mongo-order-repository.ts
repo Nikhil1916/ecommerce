@@ -49,4 +49,8 @@ export class MongoOrderRepository implements IOrderRepository {
       },
     );
   }
+
+  async findById(orderId: string): Promise<Order | null> {
+    return OrderModel.findById(orderId);
+  }
 }

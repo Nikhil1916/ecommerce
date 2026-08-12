@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema } from "mongoose";
+import { InferSchemaType, model, Schema, Types } from "mongoose";
 import { OrderStatus, PaymentStatus } from "../types/order.types";
 
 const orderItemSchema = new Schema(
@@ -75,7 +75,9 @@ const orderSchema = new Schema(
   },
 );
 
-export type Order = InferSchemaType<typeof orderSchema>;
+export type Order = InferSchemaType<typeof orderSchema> & {
+  _id: Types.ObjectId;
+};
 
 export const OrderModel = model<Order>("Order", orderSchema);
 

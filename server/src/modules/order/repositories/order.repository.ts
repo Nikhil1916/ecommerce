@@ -7,4 +7,6 @@ export interface IOrderRepository {
   markOrderAsPaid(orderId: string): Promise<Order | null>;
 
   markOrderAsPaymentFailed(orderId: string): Promise<Order | null>;
+
+  findById(orderId: string): Promise<Order | null>;
 }
