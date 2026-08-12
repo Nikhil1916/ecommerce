@@ -11,6 +11,18 @@ export type CreateOrderData = {
   userId: string;
   items: OrderItem[];
   totalAmount: number;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
-  paymentStatus: "PENDING" | "PAID" | "FAILED";
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
 };
+
+export enum OrderStatus {
+  PENDING = "PENDING",
+  CONFIRMED = "CONFIRMED",
+  CANCELLED = "CANCELLED",
+}
+
+export enum PaymentStatus {
+  PENDING = "PENDING",
+  PAID = "PAID",
+  FAILED = "FAILED",
+}

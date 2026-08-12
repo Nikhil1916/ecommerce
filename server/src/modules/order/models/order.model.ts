@@ -1,4 +1,5 @@
 import { InferSchemaType, model, Schema } from "mongoose";
+import { OrderStatus, PaymentStatus } from "../types/order.types";
 
 const orderItemSchema = new Schema(
   {
@@ -59,13 +60,13 @@ const orderSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["PENDING", "CONFIRMED", "CANCELLED"],
+      enum: Object.values(OrderStatus),
       default: "PENDING",
     },
 
     paymentStatus: {
       type: String,
-      enum: ["PENDING", "PAID", "FAILED"],
+      enum: Object.values(PaymentStatus),
       default: "PENDING",
     },
   },

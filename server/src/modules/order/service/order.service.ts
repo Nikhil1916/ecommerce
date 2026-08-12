@@ -1,6 +1,7 @@
+import { ApiError } from "../../../core/ApiError";
 import { Order } from "../models/order.model";
 import { IOrderRepository } from "../repositories/order.repository";
-import { OrderItem } from "../types/order.types";
+import { OrderItem, OrderStatus, PaymentStatus } from "../types/order.types";
 
 export class OrderService {
   constructor(private orderRepository: IOrderRepository) {}
@@ -24,10 +25,33 @@ export class OrderService {
       userId,
       items: orderItems,
       totalAmount,
-      status: "PENDING" as const,
-      paymentStatus: "PENDING" as const,
+      status: OrderStatus.PENDING,
+      paymentStatus: PaymentStatus.PENDING,
     };
 
     return this.orderRepository.createOrder(order);
+  }
+
+  async markOrderAsPaid(orderId: string): Promise<Order> {
+    const order = await this.orderRepository.markOrderAsPaid(orderId);
+
+    if (!order) {
+      throw new ApiError(404, "Order not found or cannot be marked as paid");
+    }
+
+    return order;
+  }
+
+  async markOrderAsPaymentFailed(orderId: string): Promise<Order> {
+    const order = await this.orderRepository.markOrderAsPaymentFailed(orderId);
+
+    if (!order) {
+      throw new ApiError(
+        404,
+        "Order not found or cannot be marked as payment failed",
+      );
+    }
+
+    return order;
   }
 }
