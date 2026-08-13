@@ -25,12 +25,12 @@ redisClient.on("end", () => {
 redisClient.on("error", (error) => {
   redisConnected = false;
 
-  // logger.error(
-  //   {
-  //     error,
-  //   },
-  //   "Redis client error",
-  // );
+  logger.error(
+    {
+      error,
+    },
+    "Redis client error",
+  );
 });
 
 export function connectRedis(): void {

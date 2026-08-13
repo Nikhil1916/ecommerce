@@ -2,6 +2,7 @@ import logger from "../../../lib/logger";
 import { IInventoryRepository } from "../../inventory/interfaces/inventory.repository.interface";
 import { OrderService } from "../../order/service/order.service";
 import { IPaymentGateway } from "../interfaces/payment.gateway.interface";
+import { paymentSuccessQueue } from "../queues/payment-success.queue";
 
 export class PaymentService {
   constructor(
@@ -24,6 +25,12 @@ export class PaymentService {
     }
     if (event.status === "SUCCESS") {
       await this.orderService.markOrderAsPaid(event.orderId);
+      await paymentSuccessQueue.add(
+        "send-confirmation-email",
+        {
+          orderId: event.orderId
+        }
+      )
 
       for (const item of order.items) {
         await this.inventoryRepository.decreaseStock({
