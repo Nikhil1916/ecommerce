@@ -40,12 +40,12 @@ export class ProductSeeder extends BaseSeeder {
 
           categoryId: faker.helpers.arrayElement(categories)._id,
 
-          images: [
-            {
-              url: faker.image.urlPicsumPhotos(),
-              alt: name,
-            },
-          ],
+          // images: [
+          //   {
+          //     url: faker.image.urlPicsumPhotos(),
+          //     alt: name,
+          //   },
+          // ],
 
           isActive: true,
         };

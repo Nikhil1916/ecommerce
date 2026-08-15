@@ -5,14 +5,19 @@ import {
   PaymentStatus,
 } from "../types/order.types";
 import { IOrderRepository } from "./order.repository";
+import { ClientSession } from "mongoose";
 // import { IOrderRepository } from "../interfaces/order.repository.interface";
 
 export class MongoOrderRepository implements IOrderRepository {
-  async createOrder(order: CreateOrderData): Promise<Order> {
+  async createOrder(order: CreateOrderData, session?: ClientSession): Promise<Order> {
+    if (session) {
+      return OrderModel.create([order], { session }).then((docs) => docs[0] as Order);
+    }
+
     return OrderModel.create(order);
   }
 
-  async markOrderAsPaid(orderId: string): Promise<Order | null> {
+  async markOrderAsPaid(orderId: string, session?: ClientSession): Promise<Order | null> {
     return OrderModel.findOneAndUpdate(
       {
         _id: orderId,
@@ -27,11 +32,12 @@ export class MongoOrderRepository implements IOrderRepository {
       },
       {
         new: true,
+        session,
       },
     );
   }
 
-  async markOrderAsPaymentFailed(orderId: string): Promise<Order | null> {
+  async markOrderAsPaymentFailed(orderId: string, session?: ClientSession): Promise<Order | null> {
     return OrderModel.findOneAndUpdate(
       {
         _id: orderId,
@@ -46,11 +52,12 @@ export class MongoOrderRepository implements IOrderRepository {
       },
       {
         new: true,
+        session,
       },
     );
   }
 
-  async findById(orderId: string): Promise<Order | null> {
-    return OrderModel.findById(orderId);
+  async findById(orderId: string, session?: ClientSession): Promise<Order | null> {
+    return OrderModel.findById(orderId).session(session || null);
   }
 }

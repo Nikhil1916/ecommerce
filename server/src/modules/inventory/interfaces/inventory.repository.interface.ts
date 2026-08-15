@@ -1,19 +1,12 @@
 import { UpdateInventoryDto } from "../dto/inventory.dto";
+import { ClientSession } from "mongoose";
 
 export interface IInventoryRepository {
-  reserveStock(
-    dto: UpdateInventoryDto
-  ): Promise<boolean>;
+  reserveStock(dto: UpdateInventoryDto, session?: ClientSession): Promise<boolean>;
 
-  releaseStock(
-    dto: UpdateInventoryDto
-  ): Promise<boolean>;
+  releaseStock(dto: UpdateInventoryDto, session?: ClientSession): Promise<boolean>;
 
-  increaseStock(
-    dto: UpdateInventoryDto
-  ): Promise<boolean>;
+  increaseStock(dto: UpdateInventoryDto, session?: ClientSession): Promise<boolean>;
 
-  decreaseStock(
-    dto: UpdateInventoryDto
-  ): Promise<boolean>;
+  decreaseStock(dto: UpdateInventoryDto, session?: ClientSession): Promise<boolean>;
 }

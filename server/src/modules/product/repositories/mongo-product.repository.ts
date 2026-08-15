@@ -4,11 +4,10 @@ import { ProductQueryDto } from "../dto/ProductQueryDto";
 import {
   ProductModel,
   Product,
-  CreateProductInput,
 } from "../models/product.model";
 import { PRODUCT_QUERY_CONFIG } from "../product.constants";
 import { IProductRepository } from "./product.repository";
-import { ProductListResult } from "../models/product.types";
+import { CreateProductInput, ProductListResult } from "../models/product.types";
 import { generateSlug } from "../../../utils/slug.utils";
 import { generateSKU } from "../../../utils/sku.util";
 type MongoFilter = Record<string, unknown>;

@@ -2,11 +2,12 @@ import { ApiError } from "../../../core/ApiError";
 import { Order } from "../models/order.model";
 import { IOrderRepository } from "../repositories/order.repository";
 import { OrderItem, OrderStatus, PaymentStatus } from "../types/order.types";
+import { ClientSession } from "mongoose";
 
 export class OrderService {
   constructor(private orderRepository: IOrderRepository) {}
 
-  async createOrder(userId: string, items: OrderItem[]): Promise<Order> {
+  async createOrder(userId: string, items: OrderItem[], session?: ClientSession): Promise<Order> {
     // next step
     const orderItems = items.map((item) => ({
       productId: item.productId,
@@ -29,11 +30,11 @@ export class OrderService {
       paymentStatus: PaymentStatus.PENDING,
     };
 
-    return this.orderRepository.createOrder(order);
+    return this.orderRepository.createOrder(order, session);
   }
 
-  async markOrderAsPaid(orderId: string): Promise<Order> {
-    const order = await this.orderRepository.markOrderAsPaid(orderId);
+  async markOrderAsPaid(orderId: string, session?: ClientSession): Promise<Order> {
+    const order = await this.orderRepository.markOrderAsPaid(orderId, session);
 
     if (!order) {
       throw new ApiError(404, "Order not found or cannot be marked as paid");
@@ -42,8 +43,8 @@ export class OrderService {
     return order;
   }
 
-  async markOrderAsPaymentFailed(orderId: string): Promise<Order> {
-    const order = await this.orderRepository.markOrderAsPaymentFailed(orderId);
+  async markOrderAsPaymentFailed(orderId: string, session?: ClientSession): Promise<Order> {
+    const order = await this.orderRepository.markOrderAsPaymentFailed(orderId, session);
 
     if (!order) {
       throw new ApiError(
@@ -55,8 +56,8 @@ export class OrderService {
     return order;
   }
 
-  async getOrderById(orderId: string): Promise<Order> {
-    const order = await this.orderRepository.findById(orderId);
+  async getOrderById(orderId: string, session?: ClientSession): Promise<Order> {
+    const order = await this.orderRepository.findById(orderId, session);
 
     if (!order) {
       throw new ApiError(404, "Order not found");
