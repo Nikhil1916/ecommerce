@@ -6,7 +6,8 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "seed": "tsx src/scripts/seed.ts"
+    "seed": "tsx src/scripts/seed.ts",
+    "worker": "tsx src/modules/payment/worker/payment-success.worker.ts"
   },
   "keywords": [],
   "author": "",
