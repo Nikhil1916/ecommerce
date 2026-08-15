@@ -28,9 +28,18 @@ export class PaymentService {
       await paymentSuccessQueue.add(
         "send-confirmation-email",
         {
-          orderId: event.orderId
-        }
-      )
+          orderId: event.orderId,
+        },
+        {
+          attempts: 3,
+          backoff: {
+            type: "fixed",
+            delay: 5000,
+          },
+          removeOnComplete: true,
+          removeOnFail: false,
+        },
+      );
 
       for (const item of order.items) {
         await this.inventoryRepository.decreaseStock({
