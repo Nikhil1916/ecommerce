@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "seed": "tsx src/scripts/seed.ts",
-    "worker": "tsx src/modules/payment/worker/payment-success.worker.ts"
+    "worker:payment": "tsx src/modules/payment/worker/payment-success.worker.ts",
+    "worker:expiry": "tsx src/modules/order/workers/reservation-expiry.worker.ts"
   },
   "keywords": [],
   "author": "",

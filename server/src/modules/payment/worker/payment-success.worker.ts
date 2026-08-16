@@ -1,4 +1,5 @@
 import { Worker } from "bullmq";
+import { redisConnection } from "../../../redis/config/redis.config";
 const worker = new Worker(
   "payment-success",
   async (job) => {
@@ -9,9 +10,6 @@ const worker = new Worker(
     // throw new Error("Email service down");
   },
   {
-    connection: {
-      host: "localhost",
-      port: 6379,
-    },
+    connection: redisConnection
   },
 );

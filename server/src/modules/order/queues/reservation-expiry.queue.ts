@@ -1,8 +1,7 @@
 import { Queue } from "bullmq";
 import { redisConnection } from "../../../redis/config/redis.config";
-
-export const paymentSuccessQueue = new Queue(
-       "payment-success",
+export const reservationExpiryQueue = new Queue(
+    "reservation-expiry",
     {
         connection: redisConnection
     }

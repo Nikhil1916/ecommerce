@@ -7,7 +7,11 @@ import { ClientSession } from "mongoose";
 export class OrderService {
   constructor(private orderRepository: IOrderRepository) {}
 
-  async createOrder(userId: string, items: OrderItem[], session?: ClientSession): Promise<Order> {
+  async createOrder(
+    userId: string,
+    items: OrderItem[],
+    session?: ClientSession,
+  ): Promise<Order> {
     // next step
     const orderItems = items.map((item) => ({
       productId: item.productId,
@@ -33,7 +37,10 @@ export class OrderService {
     return this.orderRepository.createOrder(order, session);
   }
 
-  async markOrderAsPaid(orderId: string, session?: ClientSession): Promise<Order> {
+  async markOrderAsPaid(
+    orderId: string,
+    session?: ClientSession,
+  ): Promise<Order> {
     const order = await this.orderRepository.markOrderAsPaid(orderId, session);
 
     if (!order) {
@@ -43,8 +50,14 @@ export class OrderService {
     return order;
   }
 
-  async markOrderAsPaymentFailed(orderId: string, session?: ClientSession): Promise<Order> {
-    const order = await this.orderRepository.markOrderAsPaymentFailed(orderId, session);
+  async markOrderAsPaymentFailed(
+    orderId: string,
+    session?: ClientSession,
+  ): Promise<Order> {
+    const order = await this.orderRepository.markOrderAsPaymentFailed(
+      orderId,
+      session,
+    );
 
     if (!order) {
       throw new ApiError(
@@ -61,6 +74,22 @@ export class OrderService {
 
     if (!order) {
       throw new ApiError(404, "Order not found");
+    }
+
+    return order;
+  }
+
+  async markOrderAsExpired(orderId: string, session?: ClientSession) {
+    const order = await this.orderRepository.markOrderAsExpired(
+      orderId,
+      session,
+    );
+
+    if (!order) {
+      throw new ApiError(
+        404,
+        "Order not found or cannot be marked as payment failed",
+      );
     }
 
     return order;

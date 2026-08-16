@@ -5,9 +5,20 @@ import { ClientSession } from "mongoose";
 export interface IOrderRepository {
   createOrder(order: CreateOrderData, session?: ClientSession): Promise<Order>;
 
-  markOrderAsPaid(orderId: string, session?: ClientSession): Promise<Order | null>;
+  markOrderAsPaid(
+    orderId: string,
+    session?: ClientSession,
+  ): Promise<Order | null>;
 
-  markOrderAsPaymentFailed(orderId: string, session?: ClientSession): Promise<Order | null>;
+  markOrderAsPaymentFailed(
+    orderId: string,
+    session?: ClientSession,
+  ): Promise<Order | null>;
 
   findById(orderId: string, session?: ClientSession): Promise<Order | null>;
+
+  markOrderAsExpired(
+    orderId: string,
+    session?: ClientSession,
+  ): Promise<Order | null>;
 }

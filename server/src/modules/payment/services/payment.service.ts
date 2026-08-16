@@ -38,7 +38,7 @@ export class PaymentService {
               quantity: item.quantity,
             }, session);
           }
-          throw new Error("TEST");
+          // throw new Error("TEST");
           queuedConfirmation = true;
           return;
         }

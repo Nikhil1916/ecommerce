@@ -2,6 +2,7 @@ import { ApiError } from "../../../core/ApiError";
 import { ICartRepository } from "../../cart/repositories/cart.repository";
 import { UpdateInventoryDto } from "../../inventory/dto/inventory.dto";
 import { IInventoryRepository } from "../../inventory/interfaces/inventory.repository.interface";
+import { reservationExpiryQueue } from "../../order/queues/reservation-expiry.queue";
 import { OrderService } from "../../order/service/order.service";
 
 export class CheckoutService {
@@ -53,7 +54,18 @@ export class CheckoutService {
           subtotal: item.product.price * item.quantity,
         })),
       );
-
+      console.log(order._id);
+      const job = await reservationExpiryQueue.add(
+        "expire-order",
+        {
+          orderId: order._id.toString(),
+        },
+        {
+          delay: 30000, // testing
+          removeOnComplete: true,
+        },
+      );
+      console.log("Expiry job added", order._id, job.id);
       return order;
     } catch (error) {
       for (const reservedItem of reservedItems) {
