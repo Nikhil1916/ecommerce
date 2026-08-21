@@ -7,13 +7,15 @@ import { FakePaymentGateway } from "../gateways/fake-payment.gateway";
 import { OrderService } from "../../order/service/order.service";
 import InventoryRepository from "../../inventory/repositories/inventory.repository";
 import { MongoOrderRepository } from "../../order/repositories/mongo-order-repository";
+import { MongoCartRespository } from "../../cart/repositories/mongo-cart.repository";
 
 const router = Router();
 
 const paymentService = new PaymentService(
   new FakePaymentGateway(),
   new OrderService(new MongoOrderRepository()),
-  new InventoryRepository()
+  new InventoryRepository(),
+  new MongoCartRespository()
 );
 
 const paymentController = new PaymentController(

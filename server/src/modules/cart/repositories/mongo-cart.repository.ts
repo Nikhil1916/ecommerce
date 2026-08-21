@@ -1,3 +1,4 @@
+import { ClientSession } from "mongoose";
 import { Cart, CartModel, CartWithProducts } from "../models/cart.model";
 import { ICartRepository } from "./cart.repository";
 
@@ -26,7 +27,7 @@ export class MongoCartRespository implements ICartRepository {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
       },
     );
   }
@@ -35,7 +36,7 @@ export class MongoCartRespository implements ICartRepository {
     return CartModel.findOneAndUpdate(
       { userId },
       { $set: { items: [] } },
-      { new: true },
+      { returnDocument: "after" },
     );
   }
 
@@ -55,7 +56,7 @@ export class MongoCartRespository implements ICartRepository {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
       },
     );
   }
@@ -81,7 +82,7 @@ export class MongoCartRespository implements ICartRepository {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
       },
     );
   }
@@ -147,7 +148,7 @@ export class MongoCartRespository implements ICartRepository {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
       },
     );
   }
@@ -168,12 +169,15 @@ export class MongoCartRespository implements ICartRepository {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
       },
     );
   }
 
-  async clearCart(userId: string): Promise<Cart | null> {
+  async clearCart(
+    userId: string,
+    session?: ClientSession,
+  ): Promise<Cart | null> {
     return CartModel.findOneAndUpdate(
       {
         userId,
@@ -184,7 +188,8 @@ export class MongoCartRespository implements ICartRepository {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
+        session,
       },
     );
   }

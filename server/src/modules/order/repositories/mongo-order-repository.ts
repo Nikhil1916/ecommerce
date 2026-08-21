@@ -22,7 +22,7 @@ export class MongoOrderRepository implements IOrderRepository {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
         session,
       },
     );
@@ -58,7 +58,7 @@ export class MongoOrderRepository implements IOrderRepository {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
         session,
       },
     );
@@ -81,7 +81,7 @@ export class MongoOrderRepository implements IOrderRepository {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
         session,
       },
     );

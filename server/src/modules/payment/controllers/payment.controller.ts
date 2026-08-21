@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { PaymentService } from "../services/payment.service";
+import { asyncHandler } from "../../../core/asyncHandler";
 
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
-  createPayment = async (req: Request, res: Response): Promise<void> => {
+  createPayment = asyncHandler(async (req: Request, res: Response) => {
     const { orderId, amount } = req.body;
 
     const payment = await this.paymentService.createPayment(orderId, amount);
@@ -13,13 +14,13 @@ export class PaymentController {
       success: true,
       data: payment,
     });
-  };
+  });
 
-  handleWebhook = async (req: Request, res: Response): Promise<void> => {
+  handleWebhook = asyncHandler(async (req: Request, res: Response) => {
     await this.paymentService.handleWebhook(req.body);
 
     res.status(200).json({
       success: true,
     });
-  };
+  });
 }

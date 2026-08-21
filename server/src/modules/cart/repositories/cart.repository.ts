@@ -1,3 +1,4 @@
+import { ClientSession } from "mongoose";
 import { Cart, CartWithProducts } from "../models/cart.model";
 export interface ICartRepository {
   findByUserId(userId: string): Promise<Cart | null>;
@@ -28,5 +29,5 @@ export interface ICartRepository {
     quantity: number,
   ): Promise<Cart | null>;
 
-  clearCart(userId: string): Promise<Cart | null>;
+  clearCart(userId: string, session?: ClientSession): Promise<Cart | null>;
 }
