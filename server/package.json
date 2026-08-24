@@ -8,7 +8,9 @@
     "start": "node dist/server.js",
     "seed": "tsx src/scripts/seed.ts",
     "worker:payment": "tsx src/modules/payment/worker/payment-success.worker.ts",
-    "worker:expiry": "tsx src/modules/order/workers/reservation-expiry.worker.ts"
+    "worker:expiry": "tsx src/modules/order/workers/reservation-expiry.worker.ts",
+    "worker:back-in-stock": "tsx src/modules/notification/workers/back-in-stock.worker.ts",
+    "worker:email": "tsx src/modules/notification/workers/email.worker.ts"
   },
   "keywords": [],
   "author": "",

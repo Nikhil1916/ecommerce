@@ -1,6 +1,8 @@
 import { ApiError } from "../../../core/ApiError";
+import { backInStockQueue } from "../../notification/queues/back-in-stock.queue";
 import { UpdateInventoryDto } from "../dto/inventory.dto";
 import { IInventoryRepository } from "../interfaces/inventory.repository.interface";
+import mongoose from "mongoose";
 
 export class InventoryService {
   constructor(private readonly inventoryRepository: IInventoryRepository) {}
@@ -22,10 +24,43 @@ export class InventoryService {
   }
 
   async increaseStock(dto: UpdateInventoryDto): Promise<void> {
-    const increased = await this.inventoryRepository.increaseStock(dto);
+    const session = await mongoose.startSession();
 
-    if (!increased) {
-      throw new ApiError(404, "Product not found.");
+    let shouldNotify = false;
+
+    try {
+      await session.withTransaction(async () => {
+        const result = await this.inventoryRepository.increaseStock(
+          dto,
+          session,
+        );
+
+        if (!result) {
+          throw new ApiError(404, "Product not found.");
+        }
+
+        shouldNotify = result.wasOutOfStock;
+      });
+    } finally {
+      await session.endSession();
+    }
+
+    if (shouldNotify) {
+      await backInStockQueue.add(
+        "product-back-in-stock",
+        {
+          productId: dto.productId,
+        },
+        {
+          attempts: 3,
+          backoff: {
+            type: "fixed",
+            delay: 5000,
+          },
+          removeOnComplete: true,
+          removeOnFail: false,
+        },
+      );
     }
   }
 
