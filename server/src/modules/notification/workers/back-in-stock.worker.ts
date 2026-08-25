@@ -7,7 +7,8 @@ import { emailQueue } from "../queues/email.queue";
 const startWorker = async (): Promise<void> => {
   await connectDatabase();
 
-  const notificationRepository = new MongoStockNotificationRepository();
+  const notificationRepository =
+    new MongoStockNotificationRepository();
 
   console.log("Back-in-stock worker started");
 
@@ -16,16 +17,25 @@ const startWorker = async (): Promise<void> => {
     async (job) => {
       const { productId } = job.data;
 
-      console.log("Processing back-in-stock notification", job.data);
+      console.log(
+        "Processing back-in-stock notification",
+        job.data,
+      );
 
       const subscribers =
-        await notificationRepository.findPendingByProduct(productId);
+        await notificationRepository.findPendingByProduct(
+          productId,
+        );
 
-      console.log(`Found ${subscribers.length} pending subscribers`);
+      console.log(
+        `Found ${subscribers.length} pending subscribers`,
+      );
 
       for (const subscriber of subscribers) {
-        // Email queue will be added here later.
-        console.log(`Notify ${subscriber.email} for product ${productId}`);
+        console.log(
+          `Creating email job for ${subscriber.email}`,
+        );
+
         await emailQueue.add(
           "back-in-stock-email",
           {
@@ -63,7 +73,11 @@ const startWorker = async (): Promise<void> => {
   });
 
   worker.on("failed", (job, error) => {
-    console.error("Back-in-stock job failed:", job?.id, error);
+    console.error(
+      "Back-in-stock job failed:",
+      job?.id,
+      error,
+    );
   });
 
   worker.on("error", (error) => {
@@ -72,6 +86,10 @@ const startWorker = async (): Promise<void> => {
 };
 
 startWorker().catch((error) => {
-  console.error("Failed to start back-in-stock worker", error);
+  console.error(
+    "Failed to start back-in-stock worker",
+    error,
+  );
+
   process.exitCode = 1;
 });
