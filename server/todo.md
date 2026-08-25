@@ -31,3 +31,32 @@ Use transaction inside expiry worker
 [ ] Create dependency container/composition root
 [ ] Centralize service/repository instantiation
 [ ] Make repositories swappable (Mongo/Postgres)
+
+
+## Post-Frontend Backend Features
+
+### User
+- [ ] Order history API
+- [ ] User profile API
+- [ ] Update profile
+- [ ] User-specific order details
+
+### Search Analytics
+- [ ] Track product searches
+- [ ] Track category searches
+- [ ] Most searched products API
+- [ ] Most searched categories API
+- [ ] Search analytics aggregation
+
+### Admin Analytics / Dashboard
+- [ ] Sales dashboard APIs
+- [ ] Sales over time
+- [ ] Sales by product
+- [ ] Sales by category
+- [ ] Revenue analytics
+- [ ] Order analytics
+- [ ] Top-selling products
+- [ ] Top-selling categories
+- [ ] Most searched products/categories
+- [ ] Date-range filtering
+- [ ] Admin dashboard graphs
