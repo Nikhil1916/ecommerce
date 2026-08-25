@@ -7,7 +7,7 @@ export class CategoryService {
     private readonly categoryRepository: ICategoryRepository
   ) {}
 
-  async createCategory(data: Category): Promise<Category> {
+  async createCategory(data: Omit<Category, "createdAt" | "updatedAt">): Promise<Category> {
     const existingCategory =
       await this.categoryRepository.findByName(data.name);
 
@@ -15,7 +15,7 @@ export class CategoryService {
       throw new ApiError(409, "Category already exists");
     }
 
-    return this.categoryRepository.create(data);
+    return this.categoryRepository.create(data as Category);
   }
 
   async getCategoryById(id: string): Promise<Category> {

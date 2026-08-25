@@ -44,3 +44,8 @@ export interface CreateProductInput {
     alt?: string;
   }[];
 }
+
+type ImportProductInput = Omit<
+  CreateProductInput,
+  "slug" | "sku"
+>;
