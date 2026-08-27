@@ -10,7 +10,7 @@ import { ImportJobData } from "../queues/import.queue";
 import { CloudinaryProvider } from "../../../storage/providers/cloudinary.provider";
 import { StorageAssetType } from "../../../storage/types/storage.types";
 
-import { ImportRepository } from "../repositories/import.repository";
+import { IImportRepository } from "../repositories/import.repository";
 import { MongoImportRepository } from "../repositories/mongo-import.repository";
 
 import fs from "fs";
