@@ -1,5 +1,5 @@
-import { any } from "zod";
 import { ApiFeatures } from "../../../lib/mongo/api-features";
+import { ICounterRepository } from "../../counter/repositories/counter.repository";
 import { ProductQueryDto } from "../dto/ProductQueryDto";
 import {
   ProductModel,
@@ -13,13 +13,15 @@ import { generateSKU } from "../../../utils/sku.util";
 type MongoFilter = Record<string, unknown>;
 
 export class MongoProductRepository implements IProductRepository {
+  constructor(
+    private readonly counterRepository: ICounterRepository,
+  ) {}
+
   async create(data: CreateProductInput): Promise<Product> {
     const slug = await this.generateUniqueSlug(data.name);
 
-    // TODO:
-    // Replace with CounterService using Mongo atomic $inc
-    // to avoid race conditions in concurrent requests.
     const sku = await this.generateUniqueSKU();
+
     const product = await ProductModel.create({ ...data, slug, sku });
     return product.toObject();
   }
@@ -195,18 +197,27 @@ export class MongoProductRepository implements IProductRepository {
   }
 
   private async generateUniqueSKU(): Promise<string> {
-    const latestProduct = await ProductModel.findOne()
-      .sort({
-        createdAt: -1,
-      })
-      .select("sku");
+    const highestProduct = await ProductModel.findOne({
+      sku: /^PRD-\d+$/,
+    })
+      .sort({ sku: -1 })
+      .select("sku")
+      .lean();
 
-    if (!latestProduct) {
-      return generateSKU(1);
-    }
+    const highestSequence = highestProduct
+      ? Number(highestProduct.sku.split("-")[1])
+      : 0;
 
-    const current = Number(latestProduct.sku.split("-")[1]);
+    await this.counterRepository.ensureAtLeast(
+      "productSku",
+      highestSequence,
+    );
 
-    return generateSKU(current + 1);
+    const sequence =
+      await this.counterRepository.getNextSequence(
+        "productSku",
+      );
+
+    return generateSKU(sequence);
   }
 }

@@ -1,40 +1,117 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "../../../redis/config/redis.config";
 import { connectDatabase } from "../../../lib/database";
-
-import { ImportService } from "../services/import.service";
-import { XlsxParser } from "../parsers/xlsx.parser";
-import { ImportStrategyFactory } from "../factories/import-strategy.factory";
-import { ImportJobData } from "../queues/import.queue";
-
-import { CloudinaryProvider } from "../../../storage/providers/cloudinary.provider";
-import { StorageAssetType } from "../../../storage/types/storage.types";
-
-import { IImportRepository } from "../repositories/import.repository";
-import { MongoImportRepository } from "../repositories/mongo-import.repository";
-
 import fs from "fs";
 import path from "path";
 import os from "os";
 
+// Services
+import { ImportService } from "../services/import.service";
+import { ProductService } from "../../product/services/product.service";
+import { CategoryService } from "../../category/services/category.service";
+
+// Repositories
+import { MongoImportRepository } from "../repositories/mongo-import.repository";
+import { MongoProductRepository } from "../../product/repositories/mongo-product.repository";
+import { MongoCategoryRepository } from "../../category/repositories/mongo-category.repository";
+import { MongoStockNotificationRepository } from "../../notification/repositories/mongo-stock-notification.repository";
+
+// Storage
+import { CloudinaryProvider } from "../../../storage/providers/cloudinary.provider";
+import { StorageAssetType } from "../../../storage/types/storage.types";
+
+// Parser + Factory
+import { XlsxParser } from "../parsers/xlsx.parser";
+import { ImportStrategyFactory } from "../factories/import-strategy.factory";
+
+// Queue types
+import { ImportJobData } from "../queues/import.queue";
+import { RedisService } from "../../../redis/services/redis.service";
+import { MongoCounterRepository } from "../../counter/repositories/mongo-counter.repository";
+
 const startWorker = async (): Promise<void> => {
   await connectDatabase();
 
-  // Dependencies
+  /*
+   * -----------------------------
+   * Infrastructure dependencies
+   * -----------------------------
+   */
+
+  const categoryRepository =
+    new MongoCategoryRepository();
+
+  const stockNotificationRepository =
+    new MongoStockNotificationRepository();
+
   const importRepository =
     new MongoImportRepository();
 
+  const storageProvider =
+    new CloudinaryProvider();
+
+  const redisService =
+    new RedisService();
+
+  const counterRepository =
+    new MongoCounterRepository();
+
+  const productRepository =
+    new MongoProductRepository(
+      counterRepository,
+    );
+
+  /*
+   * -----------------------------
+   * Services
+   * -----------------------------
+   */
+
+  const productService =
+    new ProductService(
+      productRepository,
+      categoryRepository,
+      storageProvider,
+      redisService,
+    );
+
+  const categoryService =
+    new CategoryService(
+      categoryRepository,
+    );
+
   const importService =
-    new ImportService(importRepository);
+    new ImportService(
+      importRepository,
+    );
+
+  /*
+   * -----------------------------
+   * Parser
+   * -----------------------------
+   */
 
   const parser =
     new XlsxParser();
 
-  const strategyFactory =
-    new ImportStrategyFactory();
+  /*
+   * -----------------------------
+   * Strategy Factory
+   * -----------------------------
+   */
 
-  const storageProvider =
-    new CloudinaryProvider();
+  const strategyFactory =
+    new ImportStrategyFactory(
+      productService,
+      categoryService,
+      stockNotificationRepository,
+    );
+
+  /*
+   * -----------------------------
+   * BullMQ Worker
+   * -----------------------------
+   */
 
   const worker = new Worker<ImportJobData>(
     "import",
@@ -52,16 +129,18 @@ const startWorker = async (): Promise<void> => {
       let tempFilePath: string | undefined;
 
       try {
+        /*
+         * Mark job as processing
+         */
         await importService.startImport(
           importJobId,
         );
 
         /*
-         * Download Excel from storage into a
-         * temporary file.
+         * Download Excel from storage
          *
-         * We intentionally don't create a huge
-         * Buffer for the complete Excel file.
+         * We use a stream instead of downloading
+         * the complete file into a Buffer.
          */
         const fileStream =
           await storageProvider.download(
@@ -69,36 +148,62 @@ const startWorker = async (): Promise<void> => {
             StorageAssetType.IMPORT,
           );
 
+        /*
+         * Store stream temporarily because the
+         * current XlsxParser works with filePath.
+         */
         tempFilePath = path.join(
           os.tmpdir(),
           `import-${importJobId}.xlsx`,
         );
 
         const writeStream =
-          fs.createWriteStream(tempFilePath);
+          fs.createWriteStream(
+            tempFilePath,
+          );
 
         await new Promise<void>(
           (resolve, reject) => {
             fileStream.pipe(writeStream);
 
-            fileStream.on("error", reject);
-            writeStream.on("error", reject);
-            writeStream.on("finish", resolve);
+            fileStream.on(
+              "error",
+              reject,
+            );
+
+            writeStream.on(
+              "error",
+              reject,
+            );
+
+            writeStream.on(
+              "finish",
+              resolve,
+            );
           },
         );
 
         /*
-         * Keep existing XlsxParser unchanged.
+         * Parse Excel
          */
         const rows =
-          await parser.parse(tempFilePath);
+          await parser.parse(
+            tempFilePath,
+          );
 
+        /*
+         * Select strategy according to
+         * import type.
+         */
         const strategy =
           strategyFactory.create(type);
 
         let successfulRows = 0;
         let failedRows = 0;
 
+        /*
+         * Initial progress
+         */
         await importService.updateProgress(
           importJobId,
           0,
@@ -106,6 +211,9 @@ const startWorker = async (): Promise<void> => {
           rows.length,
         );
 
+        /*
+         * Process rows
+         */
         for (
           let index = 0;
           index < rows.length;
@@ -113,21 +221,36 @@ const startWorker = async (): Promise<void> => {
         ) {
           const row = rows[index];
 
-          // Excel:
-          // row 1 = headers
-          // row 2 = first data row
-          const rowNumber = index + 2;
+          /*
+           * Excel row number:
+           *
+           * Row 1 = headers
+           * Row 2 = first data row
+           */
+          const rowNumber =
+            index + 2;
 
           try {
+            /*
+             * Validate row
+             */
             await strategy.validate(
               row,
               rowNumber,
             );
 
-            await strategy.import(row);
+            /*
+             * Import row
+             */
+            await strategy.import(
+              row,
+            );
 
             successfulRows++;
 
+            /*
+             * Record successful row
+             */
             await importService.recordRowSuccess(
               importJobId,
               rowNumber,
@@ -141,6 +264,9 @@ const startWorker = async (): Promise<void> => {
                 ? error.message
                 : "Unknown import error";
 
+            /*
+             * Record failed row
+             */
             await importService.recordRowFailure(
               importJobId,
               rowNumber,
@@ -149,6 +275,10 @@ const startWorker = async (): Promise<void> => {
             );
           }
 
+          /*
+           * Update progress after
+           * every processed row.
+           */
           await importService.updateProgress(
             importJobId,
             successfulRows,
@@ -157,6 +287,9 @@ const startWorker = async (): Promise<void> => {
           );
         }
 
+        /*
+         * Complete import
+         */
         await importService.completeImport(
           importJobId,
           successfulRows,
@@ -168,14 +301,16 @@ const startWorker = async (): Promise<void> => {
         );
       } finally {
         /*
-         * Remove temporary Excel file after
-         * processing, whether successful or failed.
+         * Remove temporary Excel file.
+         *
+         * This runs on both success
+         * and failure.
          */
         if (tempFilePath) {
           await fs.promises
             .unlink(tempFilePath)
             .catch(() => {
-              // Don't hide the original import error.
+              // Don't hide the original error.
             });
         }
       }
@@ -185,31 +320,48 @@ const startWorker = async (): Promise<void> => {
     },
   );
 
+  /*
+   * -----------------------------
+   * Worker events
+   * -----------------------------
+   */
+
   worker.on("ready", () => {
-    console.log("Import worker ready");
-  });
-
-  worker.on("completed", (job) => {
     console.log(
-      "Import job completed:",
-      job.id,
+      "Import worker ready",
     );
   });
 
-  worker.on("failed", (job, error) => {
-    console.error(
-      "Import job failed:",
-      job?.id,
-      error,
-    );
-  });
+  worker.on(
+    "completed",
+    (job) => {
+      console.log(
+        "Import job completed:",
+        job.id,
+      );
+    },
+  );
 
-  worker.on("error", (error) => {
-    console.error(
-      "Import worker error:",
-      error,
-    );
-  });
+  worker.on(
+    "failed",
+    (job, error) => {
+      console.error(
+        "Import job failed:",
+        job?.id,
+        error,
+      );
+    },
+  );
+
+  worker.on(
+    "error",
+    (error) => {
+      console.error(
+        "Import worker error:",
+        error,
+      );
+    },
+  );
 };
 
 startWorker().catch((error) => {

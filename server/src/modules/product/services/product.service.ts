@@ -67,7 +67,7 @@ export class ProductService {
         let results:any = [];
         try {
            results = await Promise.allSettled(uploadedImages.map((image)=>
-             this.storageProvider.delete(image.key) 
+             this.storageProvider.delete(image.key, StorageAssetType.IMAGE) 
           ))
         } catch (deleteError) {
           // TODO: log this

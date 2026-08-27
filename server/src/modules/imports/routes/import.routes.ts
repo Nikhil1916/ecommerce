@@ -2,8 +2,10 @@ import { Router } from "express";
 import { ImportController } from "../controllers/import.controller";
 import { authMiddleware } from "../../auth/auth.module";
 import { importUpload } from "../../../storage/multer/import-multer.config";
+import { ImportService } from "../services/import.service";
+import { MongoImportRepository } from "../repositories/mongo-import.repository";
 
-export const createImportRoutes = (
+const createImportRoutes = (
   importController: ImportController,
 ) => {
   const router = Router();
@@ -17,3 +19,5 @@ export const createImportRoutes = (
 
   return router;
 };
+
+export const importRouter = createImportRoutes(new ImportController(new ImportService(new MongoImportRepository())));

@@ -9,11 +9,14 @@ import { MongoProductRepository } from "../../product";
 import { asyncHandler } from "../../../core/asyncHandler";
 import { removeCartItemSchema } from "../validators/remove-item.validation";
 import { updateCartItemSchema } from "../validators/update-item.validation";
+import { MongoCounterRepository } from "../../counter/repositories/mongo-counter.repository";
 
 const router = Router();
 
 const cartRepository = new MongoCartRespository();
-const productRepository = new MongoProductRepository();
+const productRepository = new MongoProductRepository(
+  new MongoCounterRepository(),
+);
 
 const cartService = new CartService(cartRepository, productRepository);
 

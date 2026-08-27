@@ -14,11 +14,14 @@ import { CloudinaryProvider } from "../../../storage/providers/cloudinary.provid
 import { createProductSchema } from "../validator/create-product.validation";
 import { PRODUCT_UPLOAD } from "../../../storage/constants/upload.constants";
 import { RedisService } from "../../../redis/services/redis.service";
+import { MongoCounterRepository } from "../../counter/repositories/mongo-counter.repository";
 
 const router = Router();
 
 const productRepository =
-  new MongoProductRepository();
+  new MongoProductRepository(
+    new MongoCounterRepository(),
+  );
 
 const categoryRepository =
   new MongoCategoryRepository();

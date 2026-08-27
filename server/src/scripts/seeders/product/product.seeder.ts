@@ -6,6 +6,8 @@ import { ProductModel } from "../../../modules/product/models/product.model";
 import { CategoryModel } from "../../../modules/category/models/category.model";
 import { generateSlug } from "../../../utils/slug.utils";
 import { generateSKU } from "../../../utils/sku.util";
+import { MongoCounterRepository } from "../../../modules/counter/repositories/mongo-counter.repository";
+
 export class ProductSeeder extends BaseSeeder {
   async seed(): Promise<void> {
     const categories = await CategoryModel.find();
@@ -53,5 +55,21 @@ export class ProductSeeder extends BaseSeeder {
     );
     await this.clear(ProductModel);
     await this.insertMany(ProductModel, products);
+
+    const highestProduct = await ProductModel.findOne({
+      sku: /^PRD-\d+$/,
+    })
+      .sort({ sku: -1 })
+      .select("sku")
+      .lean();
+
+    const highestSequence = highestProduct
+      ? Number(highestProduct.sku.split("-")[1])
+      : 0;
+
+    await new MongoCounterRepository().ensureAtLeast(
+      "productSku",
+      highestSequence,
+    );
   }
 }

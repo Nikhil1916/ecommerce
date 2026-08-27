@@ -14,6 +14,7 @@ import { cartRouter } from "./modules/cart/routes/cart.routes";
 import { checkoutRouter } from "./modules/checkout/routes/checkout.routes";
 import { paymentRouter } from "./modules/payment/routes/payment.routes";
 import { stockNotificationRoutes } from "./modules/notification/stock-notification.module";
+import { importRouter } from "./modules/imports/routes/import.routes";
 const app = express();
 
 app.use(requestId);
@@ -38,6 +39,7 @@ app.use("/api/v1/inventory", inventoryRoutes);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/checkout", checkoutRouter);
 app.use("/api/v1/payment", paymentRouter);
+app.use("/api/v1/imports", importRouter);
 app.use("/api/v1", stockNotificationRoutes);
 
 // 404 Middleware
