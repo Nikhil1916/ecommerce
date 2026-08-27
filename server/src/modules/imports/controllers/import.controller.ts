@@ -3,12 +3,15 @@ import { ImportService } from "../services/import.service";
 import { ImportType } from "../types/import.types";
 import { importQueue } from "../queues/import.queue";
 import { ApiResponse } from "../../../core/ApiResponse";
+import { UploadFile } from "../../../storage/dto/upload-file.dto";
+import { CloudinaryProvider } from "../../../storage/providers/cloudinary.provider";
+import { StorageAssetType } from "../../../storage/types/storage.types";
+import { ApiError } from "../../../core/ApiError";
 
 export class ImportController {
-  constructor(
-    private readonly importService: ImportService,
-  ) {}
-
+  constructor(private readonly importService: ImportService) {}
+  // constructor(private readonly importService: ImportService) {}
+  private readonly storageProvider = new CloudinaryProvider();
   createImport = async (
     req: Request,
     res: Response,
@@ -18,23 +21,35 @@ export class ImportController {
       const file = req.file;
 
       if (!file) {
-        throw new Error("Excel file is required");
+        throw new ApiError(400, "Excel file is required");
       }
 
       const type = req.body.type as ImportType;
 
-      const importJob =
-        await this.importService.createImportJob({
-          type,
-          fileName: file.originalname,
-        });
+      const uploadFile: UploadFile = {
+        buffer: file.buffer,
+        mimetype: file.mimetype,
+        originalname: file.originalname,
+        size: file.size,
+      };
+
+      const uploadResult = await this.storageProvider.upload(
+        uploadFile,
+        StorageAssetType.IMPORT,
+      );
+
+      const importJob = await this.importService.createImportJob({
+        type,
+        fileName: file.originalname,
+        fileKey: uploadResult.key,
+      });
 
       await importQueue.add(
         "process-import",
         {
           importJobId: importJob._id.toString(),
           type,
-          filePath: file.path,
+          fileKey: uploadResult.key,
         },
         {
           attempts: 3,
@@ -48,12 +63,9 @@ export class ImportController {
       );
 
       res.status(202).json(
-        ApiResponse.success(
-          "Import started successfully.",
-          {
-            importJobId: importJob._id,
-          },
-        ),
+        ApiResponse.success("Import started successfully.", {
+          importJobId: importJob._id,
+        }),
       );
     } catch (error) {
       next(error);

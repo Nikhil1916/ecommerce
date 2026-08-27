@@ -31,6 +31,7 @@ export class MongoImportRepository
         {
           type: data.type,
           fileName: data.fileName,
+          fileKey: data.fileKey,
           status: ImportJobStatus.PENDING,
         },
       ],

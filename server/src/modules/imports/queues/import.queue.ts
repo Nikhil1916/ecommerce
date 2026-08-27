@@ -5,7 +5,7 @@ import { ImportType } from "../types/import.types";
 export interface ImportJobData {
   importJobId: string;
   type: ImportType;
-  filePath: string;
+  fileKey: string;
 }
 
 export const importQueue = new Queue<ImportJobData>(

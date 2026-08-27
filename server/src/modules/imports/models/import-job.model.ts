@@ -1,8 +1,5 @@
 import { InferSchemaType, model, Schema, Types } from "mongoose";
-import {
-  ImportJobStatus,
-  ImportType,
-} from "../types/import.types";
+import { ImportJobStatus, ImportType } from "../types/import.types";
 
 const importJobSchema = new Schema(
   {
@@ -13,6 +10,12 @@ const importJobSchema = new Schema(
     },
 
     fileName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    fileKey: {
       type: String,
       required: true,
       trim: true,
@@ -53,13 +56,8 @@ const importJobSchema = new Schema(
   },
 );
 
-export type ImportJob = InferSchemaType<
-  typeof importJobSchema
-> & {
+export type ImportJob = InferSchemaType<typeof importJobSchema> & {
   _id: Types.ObjectId;
 };
 
-export const ImportJobModel = model<ImportJob>(
-  "ImportJob",
-  importJobSchema,
-);
+export const ImportJobModel = model<ImportJob>("ImportJob", importJobSchema);

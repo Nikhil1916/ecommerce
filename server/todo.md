@@ -60,3 +60,19 @@ Use transaction inside expiry worker
 - [ ] Most searched products/categories
 - [ ] Date-range filtering
 - [ ] Admin dashboard graphs
+
+- [ ] Rename ImageStorage → StorageProvider
+- [ ] Move generic upload/download/delete abstraction
+- [ ] Implement StorageFactory
+- [ ] Inject storage instead of `new CloudinaryProvider()`
+
+Storage
+├── upload
+├── download/stream
+├── delete
+└── signed URL generation (if needed)
+
+Import
+├── store fileKey
+├── worker downloads/streams using fileKey
+└── GET import history/download

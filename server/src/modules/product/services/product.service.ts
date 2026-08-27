@@ -5,6 +5,7 @@ import { RedisService } from "../../../redis/services/redis.service";
 import { UploadFile } from "../../../storage/dto/upload-file.dto";
 import { UploadResult } from "../../../storage/dto/upload-result.dto";
 import { ImageStorage } from "../../../storage/interfaces/image-storage.interface";
+import { StorageAssetType } from "../../../storage/types/storage.types";
 import { ICategoryRepository } from "../../category/repositories/category.repository";
 import { ProductQueryDto } from "../dto/ProductQueryDto";
 import { Product } from "../models/product.model";
@@ -45,7 +46,7 @@ export class ProductService {
       if (files.length > 0) {
         uploadedImages = await Promise.all(
           files.map((file)=>
-             this.storageProvider.upload(file)
+             this.storageProvider.upload(file, StorageAssetType.IMAGE)
           )
         )
         // image = await this.storageProvider.upload(file);

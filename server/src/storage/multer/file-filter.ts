@@ -20,3 +20,28 @@ export const imageFileFilter = (
 
   callback(null, true);
 };
+
+
+export const excelFileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  callback: FileFilterCallback,
+) => {
+  const allowedMimeTypes = [
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+  ];
+
+  if (!allowedMimeTypes.includes(file.mimetype)) {
+    callback(
+      new ApiError(
+        400,
+        "Only XLS and XLSX files are allowed.",
+      ),
+    );
+
+    return;
+  }
+
+  callback(null, true);
+};

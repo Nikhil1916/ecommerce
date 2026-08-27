@@ -9,6 +9,7 @@ import {
 export interface CreateImportJobData {
   type: ImportType;
   fileName: string;
+  fileKey: string;
 }
 
 export interface CreateImportRowResultData {
