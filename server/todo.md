@@ -61,7 +61,7 @@ Use transaction inside expiry worker
 - [ ] Date-range filtering
 - [ ] Admin dashboard graphs
 
-- [ ] Rename ImageStorage → StorageProvider
+- [ ] Rename StorageProvider → StorageProvider
 - [ ] Move generic upload/download/delete abstraction
 - [ ] Implement StorageFactory
 - [ ] Inject storage instead of `new CloudinaryProvider()`

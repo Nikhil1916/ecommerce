@@ -56,6 +56,12 @@ router.get(
 
 
 router.get(
+  "/:id/images/download",
+  authMiddleware.authenticate,
+  productController.downloadProductImage.bind(productController),
+);
+
+router.get(
   "/:id",
   authMiddleware.authenticate,
   authorize(Role.ADMIN),

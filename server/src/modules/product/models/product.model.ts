@@ -16,10 +16,7 @@ const imageSchema = new Schema(
       type: String,
       trim: true,
     },
-  },
-  {
-    _id: false,
-  },
+  }
 );
 
 const productSchema = new Schema(

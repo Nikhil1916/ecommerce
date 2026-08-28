@@ -123,4 +123,25 @@ export class ProductController {
       next(error);
     }
   };
+
+async downloadProductImage(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  const { id } = req.params;
+  const { key } = req.query;
+
+  const url =
+    await this.productService.getProductImageDownloadUrl(
+      id,
+      String(key),
+    );
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      url,
+    },
+  });
+}
 }

@@ -71,4 +71,23 @@ export class ImportController {
       next(error);
     }
   };
+
+  async downloadImport(req: Request, res: Response): Promise<void> {
+    const importId = Array.isArray(req.params.id)
+      ? req.params.id[0]
+      : req.params.id;
+
+    const { stream, fileName } = await this.importService.downloadImport(
+      importId,
+    );
+
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+
+    stream.pipe(res);
+  }
 }

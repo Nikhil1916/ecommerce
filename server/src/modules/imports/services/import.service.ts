@@ -10,25 +10,25 @@ import {
   ImportType,
 } from "../types/import.types";
 
+import { Readable } from "stream";
+import { StorageProvider } from "../../../storage/interfaces/image-storage.interface";
+import { StorageAssetType } from "../../../storage/types/storage.types";
+
+
 export class ImportService {
-  constructor(
-    private readonly importRepository: IImportRepository,
+  constructor(private readonly importRepository: IImportRepository,
+     private readonly storageProvider: StorageProvider,
   ) {}
 
-  async createImportJob(
-    data: CreateImportJobData,
-  ): Promise<ImportJob> {
+  async createImportJob(data: CreateImportJobData): Promise<ImportJob> {
     return this.importRepository.createJob(data);
   }
 
-  async startImport(
-    jobId: string,
-  ): Promise<void> {
-    const job =
-      await this.importRepository.updateJobStatus(
-        jobId,
-        ImportJobStatus.PROCESSING,
-      );
+  async startImport(jobId: string): Promise<void> {
+    const job = await this.importRepository.updateJobStatus(
+      jobId,
+      ImportJobStatus.PROCESSING,
+    );
 
     if (!job) {
       throw new ApiError(404, "Import job not found.");
@@ -82,15 +82,35 @@ export class ImportService {
     successfulRows: number,
     failedRows: number,
   ): Promise<void> {
-    const job =
-      await this.importRepository.completeJob(
-        jobId,
-        successfulRows,
-        failedRows,
-      );
+    const job = await this.importRepository.completeJob(
+      jobId,
+      successfulRows,
+      failedRows,
+    );
 
     if (!job) {
       throw new ApiError(404, "Import job not found.");
     }
+  }
+
+  async downloadImport(importJobId: string): Promise<{
+    stream: Readable;
+    fileName: string;
+  }> {
+    const importJob = await this.importRepository.findById(importJobId);
+
+    if (!importJob) {
+      throw new ApiError(404, "Import job not found");
+    }
+
+    const stream = await this.storageProvider.download(
+      importJob.fileKey,
+      StorageAssetType.IMPORT,
+    );
+
+    return {
+      stream,
+      fileName: importJob.fileName,
+    };
   }
 }

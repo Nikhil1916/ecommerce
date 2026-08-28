@@ -1,9 +1,6 @@
 import { ClientSession } from "mongoose";
 
-import {
-  ImportJob,
-  ImportJobModel,
-} from "../models/import-job.model";
+import { ImportJob, ImportJobModel } from "../models/import-job.model";
 
 import { ImportRowResultModel } from "../models/import-row-result.model";
 
@@ -19,9 +16,7 @@ import {
   IImportRepository,
 } from "./import.repository";
 
-export class MongoImportRepository
-  implements IImportRepository
-{
+export class MongoImportRepository implements IImportRepository {
   async createJob(
     data: CreateImportJobData,
     session?: ClientSession,
@@ -133,5 +128,9 @@ export class MongoImportRepository
         session,
       },
     );
+  }
+
+  async findById(jobId: string): Promise<ImportJob | null> {
+    return ImportJobModel.findById(jobId).lean();
   }
 }

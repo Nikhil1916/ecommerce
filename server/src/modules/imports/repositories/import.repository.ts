@@ -51,4 +51,6 @@ export interface IImportRepository {
     failedRows: number,
     session?: ClientSession,
   ): Promise<ImportJob | null>;
+
+  findById(jobId: string): Promise<ImportJob | null>;
 }

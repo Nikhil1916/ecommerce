@@ -2,12 +2,12 @@ import { Readable } from "stream";
 
 import cloudinary from "../config/cloudinary";
 
-import { ImageStorage } from "../interfaces/image-storage.interface";
+import { StorageProvider } from "../interfaces/image-storage.interface";
 import { UploadFile } from "../dto/upload-file.dto";
 import { UploadResult } from "../dto/upload-result.dto";
 import { StorageAssetType } from "../types/storage.types";
 
-export class CloudinaryProvider implements ImageStorage {
+export class CloudinaryProvider implements StorageProvider {
   async upload(
     file: UploadFile,
     assetType: StorageAssetType,
@@ -78,5 +78,16 @@ export class CloudinaryProvider implements ImageStorage {
       default:
         throw new Error(`Unsupported storage asset type: ${assetType}`);
     }
+  }
+
+  generateSignedUrl(key: string, assetType: StorageAssetType): string {
+    const expiresAt = Math.floor(Date.now() / 1000) + 15 * 60;
+
+    return cloudinary.url(key, {
+      secure: true,
+      resource_type: this.getResourceType(assetType),
+      sign_url: true,
+      expires_at: expiresAt,
+    });
   }
 }

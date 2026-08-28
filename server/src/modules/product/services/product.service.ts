@@ -4,7 +4,7 @@ import { CacheKeys } from "../../../redis/cache-keys";
 import { RedisService } from "../../../redis/services/redis.service";
 import { UploadFile } from "../../../storage/dto/upload-file.dto";
 import { UploadResult } from "../../../storage/dto/upload-result.dto";
-import { ImageStorage } from "../../../storage/interfaces/image-storage.interface";
+import { StorageProvider } from "../../../storage/interfaces/image-storage.interface";
 import { StorageAssetType } from "../../../storage/types/storage.types";
 import { ICategoryRepository } from "../../category/repositories/category.repository";
 import { ProductQueryDto } from "../dto/ProductQueryDto";
@@ -17,7 +17,7 @@ export class ProductService {
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly categoryRepository: ICategoryRepository,
-    private readonly storageProvider: ImageStorage,
+    private readonly storageProvider: StorageProvider,
     private readonly redisService: RedisService,
   ) {}
 
@@ -45,10 +45,10 @@ export class ProductService {
 
       if (files.length > 0) {
         uploadedImages = await Promise.all(
-          files.map((file)=>
-             this.storageProvider.upload(file, StorageAssetType.IMAGE)
-          )
-        )
+          files.map((file) =>
+            this.storageProvider.upload(file, StorageAssetType.IMAGE),
+          ),
+        );
         // image = await this.storageProvider.upload(file);
       }
 
@@ -64,11 +64,13 @@ export class ProductService {
       return this.productRepository.create(productData);
     } catch (error) {
       if (uploadedImages?.length > 0) {
-        let results:any = [];
+        let results: any = [];
         try {
-           results = await Promise.allSettled(uploadedImages.map((image)=>
-             this.storageProvider.delete(image.key, StorageAssetType.IMAGE) 
-          ))
+          results = await Promise.allSettled(
+            uploadedImages.map((image) =>
+              this.storageProvider.delete(image.key, StorageAssetType.IMAGE),
+            ),
+          );
         } catch (deleteError) {
           // TODO: log this
           logger.error(
@@ -90,17 +92,14 @@ export class ProductService {
     const cachedProduct = await this.redisService.get<Product>(cacheKey);
     if (cachedProduct) {
       logger.info("Cache Hit");
-       return cachedProduct;
+      return cachedProduct;
     }
     const product = await this.productRepository.findById(id);
 
     if (!product) {
       throw new ApiError(404, "Product not found");
     }
-    await this.redisService.set(
-        cacheKey,
-        product,
-    );
+    await this.redisService.set(cacheKey, product);
     logger.info("Cache Miss");
     return product;
   }
@@ -175,5 +174,27 @@ export class ProductService {
     }
 
     return product;
+  }
+
+  async getProductImageDownloadUrl(
+    productId: string,
+    imageKey: string,
+  ): Promise<string> {
+    const product = await this.productRepository.findById(productId);
+
+    if (!product) {
+      throw new ApiError(404, "Product not found");
+    }
+
+    const image = product.images.find((image) => image._id.toString() === imageKey);
+
+    if (!image) {
+      throw new ApiError(404, "Product image not found");
+    }
+
+    return this.storageProvider.generateSignedUrl(
+      image.key,
+      StorageAssetType.IMAGE,
+    );
   }
 }
