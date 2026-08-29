@@ -133,7 +133,7 @@ const startWorker = async (): Promise<void> => {
         /*
          * Mark job as processing
          */
-          throw  Error("Tanya is pagal");
+          // throw  Error("Tanya is pagal");
         await importService.startImport(
           importJobId,
         );
@@ -321,13 +321,13 @@ const startWorker = async (): Promise<void> => {
           job.opts.attempts ?? 1;
 
         const isFinalAttempt =
-          job.attemptsMade >= maxAttempts;
+          job.attemptsMade >= maxAttempts -1;
 
         /*
          * Only mark the import as FAILED
          * when BullMQ will NOT retry it anymore.
          */
-        console.log(isFinalAttempt, importJobId, message, job.attemptsMade, maxAttempts);
+        // console.log(isFinalAttempt, importJobId, message, job.attemptsMade, maxAttempts);
         if (isFinalAttempt) {
           await importService.failImport(
             importJobId,
