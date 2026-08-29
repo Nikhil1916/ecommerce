@@ -133,4 +133,22 @@ export class MongoImportRepository implements IImportRepository {
   async findById(jobId: string): Promise<ImportJob | null> {
     return ImportJobModel.findById(jobId).lean();
   }
+
+  async failJob(
+    jobId: string,
+    error: string,
+    session?: ClientSession,
+  ): Promise<ImportJob | null> {
+    return ImportJobModel.findByIdAndUpdate(
+      jobId,
+      {
+        status: ImportJobStatus.FAILED,
+        error,
+      },
+      {
+        new: true,
+        session,
+      },
+    );
+  }
 }

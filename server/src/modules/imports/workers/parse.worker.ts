@@ -83,6 +83,7 @@ const startWorker = async (): Promise<void> => {
   const importService =
     new ImportService(
       importRepository,
+      storageProvider,
     );
 
   /*
@@ -127,20 +128,18 @@ const startWorker = async (): Promise<void> => {
       );
 
       let tempFilePath: string | undefined;
-
+      
       try {
         /*
          * Mark job as processing
          */
+          throw  Error("Tanya is pagal");
         await importService.startImport(
           importJobId,
         );
 
         /*
          * Download Excel from storage
-         *
-         * We use a stream instead of downloading
-         * the complete file into a Buffer.
          */
         const fileStream =
           await storageProvider.download(
@@ -149,8 +148,7 @@ const startWorker = async (): Promise<void> => {
           );
 
         /*
-         * Store stream temporarily because the
-         * current XlsxParser works with filePath.
+         * Temporary file path
          */
         tempFilePath = path.join(
           os.tmpdir(),
@@ -162,6 +160,10 @@ const startWorker = async (): Promise<void> => {
             tempFilePath,
           );
 
+        /*
+         * Write storage stream
+         * to temporary file.
+         */
         await new Promise<void>(
           (resolve, reject) => {
             fileStream.pipe(writeStream);
@@ -192,8 +194,7 @@ const startWorker = async (): Promise<void> => {
           );
 
         /*
-         * Select strategy according to
-         * import type.
+         * Select strategy
          */
         const strategy =
           strategyFactory.create(type);
@@ -276,8 +277,7 @@ const startWorker = async (): Promise<void> => {
           }
 
           /*
-           * Update progress after
-           * every processed row.
+           * Update progress
            */
           await importService.updateProgress(
             importJobId,
@@ -299,6 +299,49 @@ const startWorker = async (): Promise<void> => {
         console.log(
           `Import job ${job.id} completed`,
         );
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Unknown import error";
+
+        /*
+         * BullMQ increments attemptsMade
+         * for the current attempt.
+         *
+         * Example:
+         *
+         * attempts = 3
+         *
+         * attempt 1 → attemptsMade = 1
+         * attempt 2 → attemptsMade = 2
+         * attempt 3 → attemptsMade = 3
+         */
+        const maxAttempts =
+          job.opts.attempts ?? 1;
+
+        const isFinalAttempt =
+          job.attemptsMade >= maxAttempts;
+
+        /*
+         * Only mark the import as FAILED
+         * when BullMQ will NOT retry it anymore.
+         */
+        console.log(isFinalAttempt, importJobId, message, job.attemptsMade, maxAttempts);
+        if (isFinalAttempt) {
+          await importService.failImport(
+            importJobId,
+            message,
+          );
+        }
+
+        /*
+         * IMPORTANT:
+         *
+         * Re-throw the error so BullMQ knows
+         * that the job failed and can retry it.
+         */
+        throw error;
       } finally {
         /*
          * Remove temporary Excel file.
@@ -310,7 +353,9 @@ const startWorker = async (): Promise<void> => {
           await fs.promises
             .unlink(tempFilePath)
             .catch(() => {
-              // Don't hide the original error.
+              /*
+               * Don't hide the original error.
+               */
             });
         }
       }

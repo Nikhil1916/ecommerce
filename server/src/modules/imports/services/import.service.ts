@@ -14,10 +14,10 @@ import { Readable } from "stream";
 import { StorageProvider } from "../../../storage/interfaces/image-storage.interface";
 import { StorageAssetType } from "../../../storage/types/storage.types";
 
-
 export class ImportService {
-  constructor(private readonly importRepository: IImportRepository,
-     private readonly storageProvider: StorageProvider,
+  constructor(
+    private readonly importRepository: IImportRepository,
+    private readonly storageProvider: StorageProvider,
   ) {}
 
   async createImportJob(data: CreateImportJobData): Promise<ImportJob> {
@@ -112,5 +112,13 @@ export class ImportService {
       stream,
       fileName: importJob.fileName,
     };
+  }
+
+  async failImport(jobId: string, error: string): Promise<void> {
+    const job = await this.importRepository.failJob(jobId, error);
+
+    if (!job) {
+      throw new ApiError(404, "Import job not found.");
+    }
   }
 }

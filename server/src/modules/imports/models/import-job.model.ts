@@ -50,6 +50,10 @@ const importJobSchema = new Schema(
     completedAt: {
       type: Date,
     },
+    error: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,
