@@ -5,6 +5,7 @@ import {
   ImportRowStatus,
   ImportType,
 } from "../types/import.types";
+import { ImportRowResult } from "../models/import-row-result.model";
 
 export interface CreateImportJobData {
   type: ImportType;
@@ -59,4 +60,9 @@ export interface IImportRepository {
     error: string,
     session?: ClientSession,
   ): Promise<ImportJob | null>;
+
+  findRowResult(
+    importJobId: string,
+    rowNumber: number,
+  ): Promise<ImportRowResult | null>;
 }

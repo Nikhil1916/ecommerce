@@ -2,7 +2,8 @@ import { ClientSession } from "mongoose";
 
 import { ImportJob, ImportJobModel } from "../models/import-job.model";
 
-import { ImportRowResultModel } from "../models/import-row-result.model";
+import { ImportRowResult, ImportRowResultModel } from "../models/import-row-result.model";
+import { MongoServerError } from "mongodb";
 
 import {
   ImportJobStatus,
@@ -89,10 +90,11 @@ export class MongoImportRepository implements IImportRepository {
     );
   }
 
-  async createRowResult(
-    data: CreateImportRowResultData,
-    session?: ClientSession,
-  ): Promise<void> {
+async createRowResult(
+  data: CreateImportRowResultData,
+  session?: ClientSession,
+): Promise<void> {
+  try {
     await ImportRowResultModel.create(
       [
         {
@@ -105,8 +107,17 @@ export class MongoImportRepository implements IImportRepository {
       ],
       { session },
     );
-  }
+  } catch (error:any) {
+    if (
+      error instanceof MongoServerError &&
+      error.code === 11000
+    ) {
+      return;
+    }
 
+    throw error;
+  }
+}
   async completeJob(
     jobId: string,
     successfulRows: number,
@@ -150,5 +161,15 @@ export class MongoImportRepository implements IImportRepository {
         session,
       },
     );
+  }
+
+  async findRowResult(
+    importJobId: string,
+    rowNumber: number,
+  ): Promise<ImportRowResult | null> {
+    return ImportRowResultModel.findOne({
+      importJobId,
+      rowNumber,
+    });
   }
 }

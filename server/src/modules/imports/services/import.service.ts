@@ -121,4 +121,10 @@ export class ImportService {
       throw new ApiError(404, "Import job not found.");
     }
   }
+
+  async isRowProcessed(jobId: string, rowNumber: number): Promise<boolean> {
+    const result = await this.importRepository.findRowResult(jobId, rowNumber);
+
+    return result?.status === ImportRowStatus.SUCCESS;
+  }
 }

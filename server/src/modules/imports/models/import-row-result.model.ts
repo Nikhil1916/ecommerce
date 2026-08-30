@@ -51,3 +51,7 @@ export const ImportRowResultModel =
     "ImportRowResult",
     importRowResultSchema,
   );
+importRowResultSchema.index(
+  { importJobId: 1, rowNumber: 1 },
+  { unique: true },
+);

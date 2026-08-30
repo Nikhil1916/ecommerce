@@ -38,28 +38,19 @@ const startWorker = async (): Promise<void> => {
    * -----------------------------
    */
 
-  const categoryRepository =
-    new MongoCategoryRepository();
+  const categoryRepository = new MongoCategoryRepository();
 
-  const stockNotificationRepository =
-    new MongoStockNotificationRepository();
+  const stockNotificationRepository = new MongoStockNotificationRepository();
 
-  const importRepository =
-    new MongoImportRepository();
+  const importRepository = new MongoImportRepository();
 
-  const storageProvider =
-    new CloudinaryProvider();
+  const storageProvider = new CloudinaryProvider();
 
-  const redisService =
-    new RedisService();
+  const redisService = new RedisService();
 
-  const counterRepository =
-    new MongoCounterRepository();
+  const counterRepository = new MongoCounterRepository();
 
-  const productRepository =
-    new MongoProductRepository(
-      counterRepository,
-    );
+  const productRepository = new MongoProductRepository(counterRepository);
 
   /*
    * -----------------------------
@@ -67,24 +58,16 @@ const startWorker = async (): Promise<void> => {
    * -----------------------------
    */
 
-  const productService =
-    new ProductService(
-      productRepository,
-      categoryRepository,
-      storageProvider,
-      redisService,
-    );
+  const productService = new ProductService(
+    productRepository,
+    categoryRepository,
+    storageProvider,
+    redisService,
+  );
 
-  const categoryService =
-    new CategoryService(
-      categoryRepository,
-    );
+  const categoryService = new CategoryService(categoryRepository);
 
-  const importService =
-    new ImportService(
-      importRepository,
-      storageProvider,
-    );
+  const importService = new ImportService(importRepository, storageProvider);
 
   /*
    * -----------------------------
@@ -92,8 +75,7 @@ const startWorker = async (): Promise<void> => {
    * -----------------------------
    */
 
-  const parser =
-    new XlsxParser();
+  const parser = new XlsxParser();
 
   /*
    * -----------------------------
@@ -101,12 +83,11 @@ const startWorker = async (): Promise<void> => {
    * -----------------------------
    */
 
-  const strategyFactory =
-    new ImportStrategyFactory(
-      productService,
-      categoryService,
-      stockNotificationRepository,
-    );
+  const strategyFactory = new ImportStrategyFactory(
+    productService,
+    categoryService,
+    stockNotificationRepository,
+  );
 
   /*
    * -----------------------------
@@ -117,87 +98,56 @@ const startWorker = async (): Promise<void> => {
   const worker = new Worker<ImportJobData>(
     "import",
     async (job) => {
-      const {
-        importJobId,
-        type,
-        fileKey,
-      } = job.data;
+      const { importJobId, type, fileKey } = job.data;
 
-      console.log(
-        `Processing import job: ${job.id}`,
-      );
+      console.log(`Processing import job: ${job.id}`);
 
       let tempFilePath: string | undefined;
-      
+
       try {
         /*
          * Mark job as processing
          */
-          // throw  Error("Tanya is pagal");
-        await importService.startImport(
-          importJobId,
-        );
+        await importService.startImport(importJobId);
 
         /*
          * Download Excel from storage
          */
-        const fileStream =
-          await storageProvider.download(
-            fileKey,
-            StorageAssetType.IMPORT,
-          );
+        const fileStream = await storageProvider.download(
+          fileKey,
+          StorageAssetType.IMPORT,
+        );
 
         /*
          * Temporary file path
          */
-        tempFilePath = path.join(
-          os.tmpdir(),
-          `import-${importJobId}.xlsx`,
-        );
+        tempFilePath = path.join(os.tmpdir(), `import-${importJobId}.xlsx`);
 
-        const writeStream =
-          fs.createWriteStream(
-            tempFilePath,
-          );
+        const writeStream = fs.createWriteStream(tempFilePath);
 
         /*
          * Write storage stream
          * to temporary file.
          */
-        await new Promise<void>(
-          (resolve, reject) => {
-            fileStream.pipe(writeStream);
+        await new Promise<void>((resolve, reject) => {
+          fileStream.pipe(writeStream);
 
-            fileStream.on(
-              "error",
-              reject,
-            );
+          fileStream.on("error", reject);
 
-            writeStream.on(
-              "error",
-              reject,
-            );
+          writeStream.on("error", reject);
 
-            writeStream.on(
-              "finish",
-              resolve,
-            );
-          },
-        );
+          writeStream.on("finish", resolve);
+        });
 
         /*
          * Parse Excel
          */
-        const rows =
-          await parser.parse(
-            tempFilePath,
-          );
+        const rows = await parser.parse(tempFilePath);
 
         /*
          * Select strategy
          */
-        const strategy =
-          strategyFactory.create(type);
+        const strategy = strategyFactory.create(type);
 
         let successfulRows = 0;
         let failedRows = 0;
@@ -205,21 +155,12 @@ const startWorker = async (): Promise<void> => {
         /*
          * Initial progress
          */
-        await importService.updateProgress(
-          importJobId,
-          0,
-          0,
-          rows.length,
-        );
+        await importService.updateProgress(importJobId, 0, 0, rows.length);
 
         /*
          * Process rows
          */
-        for (
-          let index = 0;
-          index < rows.length;
-          index++
-        ) {
+        for (let index = 0; index < rows.length; index++) {
           const row = rows[index];
 
           /*
@@ -228,42 +169,45 @@ const startWorker = async (): Promise<void> => {
            * Row 1 = headers
            * Row 2 = first data row
            */
-          const rowNumber =
-            index + 2;
+          const rowNumber = index + 2;
 
           try {
             /*
              * Validate row
              */
-            await strategy.validate(
-              row,
+            const alreadyProcessed = await importService.isRowProcessed(
+              importJobId,
               rowNumber,
             );
+
+            if (alreadyProcessed) {
+              successfulRows++;
+              await importService.updateProgress(
+                importJobId,
+                successfulRows,
+                failedRows,
+                rows.length,
+              );
+              continue;
+            }
+            await strategy.validate(row, rowNumber);
 
             /*
              * Import row
              */
-            await strategy.import(
-              row,
-            );
+            await strategy.import(row);
 
             successfulRows++;
 
             /*
              * Record successful row
              */
-            await importService.recordRowSuccess(
-              importJobId,
-              rowNumber,
-              row,
-            );
+            await importService.recordRowSuccess(importJobId, rowNumber, row);
           } catch (error) {
             failedRows++;
 
             const message =
-              error instanceof Error
-                ? error.message
-                : "Unknown import error";
+              error instanceof Error ? error.message : "Unknown import error";
 
             /*
              * Record failed row
@@ -296,14 +240,10 @@ const startWorker = async (): Promise<void> => {
           failedRows,
         );
 
-        console.log(
-          `Import job ${job.id} completed`,
-        );
+        console.log(`Import job ${job.id} completed`);
       } catch (error) {
         const message =
-          error instanceof Error
-            ? error.message
-            : "Unknown import error";
+          error instanceof Error ? error.message : "Unknown import error";
 
         /*
          * BullMQ increments attemptsMade
@@ -317,11 +257,9 @@ const startWorker = async (): Promise<void> => {
          * attempt 2 → attemptsMade = 2
          * attempt 3 → attemptsMade = 3
          */
-        const maxAttempts =
-          job.opts.attempts ?? 1;
+        const maxAttempts = job.opts.attempts ?? 1;
 
-        const isFinalAttempt =
-          job.attemptsMade >= maxAttempts -1;
+        const isFinalAttempt = job.attemptsMade >= maxAttempts - 1;
 
         /*
          * Only mark the import as FAILED
@@ -329,10 +267,7 @@ const startWorker = async (): Promise<void> => {
          */
         // console.log(isFinalAttempt, importJobId, message, job.attemptsMade, maxAttempts);
         if (isFinalAttempt) {
-          await importService.failImport(
-            importJobId,
-            message,
-          );
+          await importService.failImport(importJobId, message);
         }
 
         /*
@@ -350,13 +285,11 @@ const startWorker = async (): Promise<void> => {
          * and failure.
          */
         if (tempFilePath) {
-          await fs.promises
-            .unlink(tempFilePath)
-            .catch(() => {
-              /*
-               * Don't hide the original error.
-               */
-            });
+          await fs.promises.unlink(tempFilePath).catch(() => {
+            /*
+             * Don't hide the original error.
+             */
+          });
         }
       }
     },
@@ -372,48 +305,24 @@ const startWorker = async (): Promise<void> => {
    */
 
   worker.on("ready", () => {
-    console.log(
-      "Import worker ready",
-    );
+    console.log("Import worker ready");
   });
 
-  worker.on(
-    "completed",
-    (job) => {
-      console.log(
-        "Import job completed:",
-        job.id,
-      );
-    },
-  );
+  worker.on("completed", (job) => {
+    console.log("Import job completed:", job.id);
+  });
 
-  worker.on(
-    "failed",
-    (job, error) => {
-      console.error(
-        "Import job failed:",
-        job?.id,
-        error,
-      );
-    },
-  );
+  worker.on("failed", (job, error) => {
+    console.error("Import job failed:", job?.id, error);
+  });
 
-  worker.on(
-    "error",
-    (error) => {
-      console.error(
-        "Import worker error:",
-        error,
-      );
-    },
-  );
+  worker.on("error", (error) => {
+    console.error("Import worker error:", error);
+  });
 };
 
 startWorker().catch((error) => {
-  console.error(
-    "Failed to start import worker:",
-    error,
-  );
+  console.error("Failed to start import worker:", error);
 
   process.exit(1);
 });
