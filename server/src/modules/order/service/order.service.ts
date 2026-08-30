@@ -40,14 +40,8 @@ export class OrderService {
   async markOrderAsPaid(
     orderId: string,
     session?: ClientSession,
-  ): Promise<Order> {
-    const order = await this.orderRepository.markOrderAsPaid(orderId, session);
-
-    if (!order) {
-      throw new ApiError(404, "Order not found or cannot be marked as paid");
-    }
-
-    return order;
+  ): Promise<Order | null> {
+    return this.orderRepository.markOrderAsPaid(orderId, session);
   }
 
   async markOrderAsPaymentFailed(

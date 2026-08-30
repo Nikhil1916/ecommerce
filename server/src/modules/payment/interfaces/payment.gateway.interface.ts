@@ -7,7 +7,10 @@ export interface IPaymentGateway {
     paymentUrl?: string;
   }>;
 
-  handleWebhook(payload: unknown): Promise<{
+  handleWebhook(
+    payload: Buffer,
+    signature: string,
+  ): Promise<{
     orderId: string;
     status: "SUCCESS" | "FAILED";
   }>;

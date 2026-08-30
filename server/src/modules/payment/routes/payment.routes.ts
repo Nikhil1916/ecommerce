@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express, { Router } from "express";
 import { authMiddleware } from "../../auth/auth.module";
 import { asyncHandler } from "../../../core/asyncHandler";
 import { PaymentController } from "../controllers/payment.controller";
@@ -24,6 +24,7 @@ const paymentController = new PaymentController(
 
 router.post(
   "/create",
+   express.json(),
   authMiddleware.authenticate,
   asyncHandler(paymentController.createPayment),
 );
@@ -31,6 +32,7 @@ router.post(
 
 router.post(
   "/webhook",
+  express.raw({ type: "application/json" }),
   asyncHandler(paymentController.handleWebhook),
 );
 

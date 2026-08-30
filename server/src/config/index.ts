@@ -1,4 +1,3 @@
-
 import { env } from "./env";
 
 export const config = {
@@ -24,4 +23,7 @@ export const config = {
   CLOUDINARY_API_KEY: env.CLOUDINARY_API_KEY!,
   CLOUDINARY_API_SECRET: env.CLOUDINARY_API_SECRET!,
   REDIS_URL: env.REDIS_URL,
+  RAZORPAY_KEY_ID: env.RAZORPAY_KEY_ID,
+  RAZORPAY_KEY_SECRET: env.RAZORPAY_KEY_SECRET,
+  RAZORPAY_WEBHOOK_SECRET: env.RAZORPAY_WEBHOOK_SECRET,
 };

@@ -20,6 +20,8 @@ const app = express();
 app.use(requestId);
 app.use(loggerMiddleware);
 
+app.use("/api/v1/payment", paymentRouter);
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -38,7 +40,6 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/inventory", inventoryRoutes);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/checkout", checkoutRouter);
-app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1/imports", importRouter);
 app.use("/api/v1", stockNotificationRoutes);
 
