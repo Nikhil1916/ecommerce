@@ -20,8 +20,9 @@ export class RazorpayPaymentGateway implements IPaymentGateway {
     paymentId: string;
     paymentUrl?: string;
   }> {
+    // console.log(env);
     const razorpayOrder = await this.razorpay.orders.create({
-      amount,
+      amount: amount * 100,
       currency: "INR",
       receipt: orderId,
     });

@@ -14,7 +14,7 @@ export const errorHandler = (
   // Unknown Errors
     logger.error(
       {
-        error: err,
+         err,
         requestId: req.requestId,
         method: req.method,
         url: req.originalUrl,

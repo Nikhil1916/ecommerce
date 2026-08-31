@@ -8,11 +8,12 @@ import { OrderService } from "../../order/service/order.service";
 import InventoryRepository from "../../inventory/repositories/inventory.repository";
 import { MongoOrderRepository } from "../../order/repositories/mongo-order-repository";
 import { MongoCartRespository } from "../../cart/repositories/mongo-cart.repository";
+import { RazorpayPaymentGateway } from "../gateways/razorpay-payment.gateway";
 
 const router = Router();
 
 const paymentService = new PaymentService(
-  new FakePaymentGateway(),
+  new RazorpayPaymentGateway(),
   new OrderService(new MongoOrderRepository()),
   new InventoryRepository(),
   new MongoCartRespository()
@@ -24,6 +25,7 @@ const paymentController = new PaymentController(
 
 router.post(
   "/create",
+  // ()=>{throw new Error("hello")},
    express.json(),
   authMiddleware.authenticate,
   asyncHandler(paymentController.createPayment),

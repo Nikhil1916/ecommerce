@@ -19,11 +19,11 @@ const app = express();
 
 app.use(requestId);
 app.use(loggerMiddleware);
+app.use(cookieParser());
 
 app.use("/api/v1/payment", paymentRouter);
 
 app.use(express.json());
-app.use(cookieParser());
 
 app.get("/api/v1/health", (req, res) => {
   res.json(

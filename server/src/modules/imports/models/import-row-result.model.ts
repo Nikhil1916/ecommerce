@@ -35,10 +35,10 @@ const importRowResultSchema = new Schema(
   },
 );
 
-importRowResultSchema.index({
-  importJobId: 1,
-  rowNumber: 1,
-});
+// importRowResultSchema.index({
+//   importJobId: 1,
+//   rowNumber: 1,
+// });
 
 export type ImportRowResult = InferSchemaType<
   typeof importRowResultSchema

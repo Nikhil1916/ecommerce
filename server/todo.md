@@ -76,3 +76,12 @@ Import
 ├── store fileKey
 ├── worker downloads/streams using fileKey
 └── GET import history/download
+
+## Post Deployment
+- [ ] Configure Razorpay webhook with deployed public API URL
+- [ ] Test `payment.captured` webhook end-to-end
+- [ ] Test `payment.failed` webhook end-to-end
+- [ ] Verify Razorpay webhook signature validation
+- [ ] Verify duplicate webhook handling / idempotency
+- [ ] Verify payment transaction updates order, inventory and cart correctly
+- [ ] Verify payment success queue is triggered only after transaction commit
