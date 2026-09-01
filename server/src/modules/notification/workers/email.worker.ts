@@ -9,6 +9,7 @@ import {
   orderConfirmationTemplate,
 } from "../templates/email.templates";
 import { EmailType } from "../types/email.types";
+import { ResendEmailProvider } from "../providers/resend-email.provider";
 
 console.log("Email worker started");
 
@@ -17,7 +18,7 @@ async function startWorker() {
 
   const notificationRepository = new MongoStockNotificationRepository();
 
-  const emailService = new EmailService(new FakeEmailProvider());
+  const emailService = new EmailService(new ResendEmailProvider());
 
   const worker = new Worker(
     "email",
