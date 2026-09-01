@@ -1,5 +1,6 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "../../../redis/config/redis.config";
+import { connectDatabase } from "../../../lib/database";
 import logger from "../../../lib/logger";
 
 import { MongoOrderRepository } from "../../order/repositories/mongo-order-repository";
@@ -7,10 +8,15 @@ import { PrismaUserRepository } from "../../user/repositories/prisma-user.reposi
 import { emailQueue } from "../../notification/queues/email.queue";
 import { EmailType } from "../../notification/types/email.types";
 
-const orderRepository = new MongoOrderRepository();
-const userRepository = new PrismaUserRepository();
+console.log("Payment success worker started");
 
-const worker = new Worker(
+const startWorker = async (): Promise<void> => {
+  await connectDatabase();
+
+  const orderRepository = new MongoOrderRepository();
+  const userRepository = new PrismaUserRepository();
+
+  const worker = new Worker(
   "payment-success",
   async (job) => {
     const { orderId } = job.data;
@@ -64,9 +70,10 @@ const worker = new Worker(
         "Order confirmation email job queued",
       );
     } catch (error) {
+      console.log(error);
       logger.error(
         {
-          error,
+          err:error,
           jobId: job.id,
           orderId,
           attemptsMade: job.attemptsMade,
@@ -106,11 +113,14 @@ worker.on("failed", (job, error) => {
   );
 });
 
-worker.on("error", (error) => {
-  logger.error(
-    {
-      error,
-    },
-    "Payment success worker error",
-  );
-});
+  worker.on("error", (error) => {
+    logger.error(
+      {
+        error,
+      },
+      "Payment success worker error",
+    );
+  });
+};
+
+startWorker();

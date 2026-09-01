@@ -33,7 +33,7 @@ const startWorker = async (): Promise<void> => {
         throw new Error(`Product not found: ${productId}`);
       }
 
-      Then: console.log(`Found ${subscribers.length} pending subscribers`);
+      console.log(`Found ${subscribers.length} pending subscribers`);
 
       for (const subscriber of subscribers) {
         console.log(`Creating email job for ${subscriber.email}`);
@@ -44,7 +44,7 @@ const startWorker = async (): Promise<void> => {
             type: EmailType.BACK_IN_STOCK,
             notificationId: subscriber._id.toString(),
             productName: product.name,
-            email: subscriber.email,
+            to: subscriber.email,
           },
           {
             attempts: 3,

@@ -23,7 +23,7 @@ async function startWorker() {
     "email",
     async (job) => {
       const { type, to } = job.data;
-
+      console.log(`Processing email job of type: ${type} for ${to}`);
       let template;
 
       switch (type) {
