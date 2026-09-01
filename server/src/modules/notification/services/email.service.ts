@@ -5,19 +5,11 @@ export class EmailService {
     private readonly emailProvider: IEmailProvider,
   ) {}
 
-  async sendOrderConfirmation(data: {
+  async sendEmail(data: {
     to: string;
-    orderId: string;
+    subject: string;
+    html: string;
   }): Promise<void> {
-    throw new Error("Email service down");
-    await this.emailProvider.sendEmail({
-      to: data.to,
-      subject: "Order Confirmation",
-      html: `
-        <h2>Payment Successful</h2>
-        <p>Your order has been confirmed.</p>
-        <p>Order ID: ${data.orderId}</p>
-      `,
-    });
+    await this.emailProvider.sendEmail(data);
   }
 }

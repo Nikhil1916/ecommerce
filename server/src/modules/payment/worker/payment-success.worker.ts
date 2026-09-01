@@ -4,18 +4,11 @@ import logger from "../../../lib/logger";
 
 import { MongoOrderRepository } from "../../order/repositories/mongo-order-repository";
 import { PrismaUserRepository } from "../../user/repositories/prisma-user.repository";
-import { EmailService } from "../../notification/services/email.service";
-import { FakeEmailProvider } from "../../notification/providers/fake-email.provider";
-
-;
+import { emailQueue } from "../../notification/queues/email.queue";
+import { EmailType } from "../../notification/types/email.types";
 
 const orderRepository = new MongoOrderRepository();
-
 const userRepository = new PrismaUserRepository();
-
-const emailService = new EmailService(
-  new FakeEmailProvider(),
-);
 
 const worker = new Worker(
   "payment-success",
@@ -28,7 +21,7 @@ const worker = new Worker(
         orderId,
         attemptsMade: job.attemptsMade,
       },
-      "Processing payment confirmation email",
+      "Processing payment success job",
     );
 
     try {
@@ -44,10 +37,23 @@ const worker = new Worker(
         throw new Error(`User not found: ${order.userId}`);
       }
 
-      await emailService.sendOrderConfirmation({
-        to: user.email,
-        orderId: order.orderNumber,
-      });
+      await emailQueue.add(
+        "order-confirmation",
+        {
+          type: EmailType.ORDER_CONFIRMATION,
+          to: user.email,
+          orderId: order.orderNumber,
+        },
+        {
+          attempts: 3,
+          backoff: {
+            type: "fixed",
+            delay: 5000,
+          },
+          removeOnComplete: true,
+          removeOnFail: false,
+        },
+      );
 
       logger.info(
         {
@@ -55,7 +61,7 @@ const worker = new Worker(
           orderId,
           email: user.email,
         },
-        "Payment confirmation email sent",
+        "Order confirmation email job queued",
       );
     } catch (error) {
       logger.error(
@@ -65,15 +71,9 @@ const worker = new Worker(
           orderId,
           attemptsMade: job.attemptsMade,
         },
-        "Failed to send payment confirmation email",
+        "Failed to queue payment confirmation email",
       );
 
-      /*
-       * IMPORTANT:
-       *
-       * Re-throw the error so BullMQ marks
-       * the job as failed and retries it.
-       */
       throw error;
     }
   },
@@ -91,7 +91,7 @@ worker.on("completed", (job) => {
     {
       jobId: job.id,
     },
-    "Payment confirmation job completed",
+    "Payment success job completed",
   );
 });
 
@@ -102,7 +102,7 @@ worker.on("failed", (job, error) => {
       error,
       attemptsMade: job?.attemptsMade,
     },
-    "Payment confirmation job failed",
+    "Payment success job failed",
   );
 });
 

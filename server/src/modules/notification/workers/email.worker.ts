@@ -2,6 +2,13 @@ import { Worker } from "bullmq";
 import { redisConnection } from "../../../redis/config/redis.config";
 import { MongoStockNotificationRepository } from "../repositories/mongo-stock-notification.repository";
 import { connectDatabase } from "../../../lib/database";
+import { EmailService } from "../services/email.service";
+import { FakeEmailProvider } from "../providers/fake-email.provider";
+import {
+  backInStockTemplate,
+  orderConfirmationTemplate,
+} from "../templates/email.templates";
+import { EmailType } from "../types/email.types";
 
 console.log("Email worker started");
 
@@ -9,25 +16,42 @@ async function startWorker() {
   await connectDatabase();
 
   const notificationRepository = new MongoStockNotificationRepository();
+
+  const emailService = new EmailService(new FakeEmailProvider());
+
   const worker = new Worker(
     "email",
     async (job) => {
-      console.log("Processing email job:", job.id);
-      console.log(job.data);
+      const { type, to } = job.data;
 
-      // Later actual email provider goes here.
-      console.log(`Sending back-in-stock email to ${job.data.email}`);
+      let template;
 
-      // Simulated successful email
-      const notification = await notificationRepository.markAsNotified(
-        job.data.notificationId,
-      );
+      switch (type) {
+        case EmailType.ORDER_CONFIRMATION:
+          template = orderConfirmationTemplate({
+            orderId: job.data.orderId,
+          });
+          break;
 
-      if (!notification) {
-        throw new Error("Notification not found or already marked as notified");
+        case EmailType.BACK_IN_STOCK:
+          template = backInStockTemplate({
+            productName: job.data.productName,
+          });
+          break;
+
+        default:
+          throw new Error(`Unsupported email type: ${type}`);
       }
 
-      console.log(`Notification marked as NOTIFIED: ${notification._id}`);
+      await emailService.sendEmail({
+        to,
+        ...template,
+      });
+
+      // back-in-stock specific DB update
+      if (type === "BACK_IN_STOCK") {
+        await notificationRepository.markAsNotified(job.data.notificationId);
+      }
     },
     {
       connection: redisConnection,
@@ -53,5 +77,6 @@ async function startWorker() {
 
 startWorker().catch((error) => {
   console.error("Failed to start email worker:", error);
+
   process.exit(1);
 });

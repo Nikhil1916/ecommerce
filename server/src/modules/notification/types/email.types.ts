@@ -1,0 +1,4 @@
+export enum EmailType {
+  ORDER_CONFIRMATION = "ORDER_CONFIRMATION",
+  BACK_IN_STOCK = "BACK_IN_STOCK",
+}
