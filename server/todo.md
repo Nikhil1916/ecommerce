@@ -85,3 +85,7 @@ Import
 - [ ] Verify duplicate webhook handling / idempotency
 - [ ] Verify payment transaction updates order, inventory and cart correctly
 - [ ] Verify payment success queue is triggered only after transaction commit
+
+OUTBOX PATTERN
+
+ADD SEND GRID OR AWS FOR EMAILS
