@@ -1,0 +1,292 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  animation: pageEnter 500ms ease;
+}
+
+/* ---------- Brand ---------- */
+
+.brandSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  background: var(--color-primary);
+  color: white;
+}
+
+.brandContent {
+  max-width: 480px;
+}
+
+.logo {
+  margin-bottom: var(--space-2xl);
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.brandContent h1 {
+  margin-bottom: var(--space-lg);
+  font-size: clamp(2.25rem, 4vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.brandContent h1 span {
+  display: block;
+  opacity: 0.75;
+}
+
+.brandContent p {
+  max-width: 420px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: var(--font-size-lg);
+}
+
+/* ---------- Form section ---------- */
+
+.formSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  background: var(--color-background);
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.header {
+  margin-bottom: var(--space-xl);
+}
+
+.header h2 {
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-2xl);
+  line-height: 1.2;
+}
+
+.header p {
+  color: var(--color-text-muted);
+}
+
+.header a {
+  color: var(--color-primary);
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+
+.header a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* ---------- Form ---------- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.nameFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.formGroup label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.passwordField {
+  position: relative;
+}
+
+.formGroup input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.formGroup input::placeholder {
+  color: #9ca3af;
+}
+
+.formGroup input:hover {
+  border-color: #c4c7ce;
+}
+
+.formGroup input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.formGroup input.inputError {
+  border-color: var(--color-error);
+}
+
+.error {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+}
+
+.passwordHint {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+/* ---------- Button ---------- */
+
+.submitButton {
+  min-height: 48px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: white;
+  font-weight: 700;
+  transition:
+    background var(--transition-normal),
+    transform var(--transition-fast),
+    box-shadow var(--transition-normal);
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ---------- Animation ---------- */
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 768px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .brandSection {
+    min-height: 280px;
+    padding: var(--space-xl);
+  }
+
+  .brandContent {
+    max-width: 600px;
+  }
+
+  .logo {
+    margin-bottom: var(--space-lg);
+  }
+
+  .brandContent h1 {
+    font-size: 2.25rem;
+  }
+
+  .brandContent p {
+    font-size: var(--font-size-base);
+  }
+
+  .formSection {
+    padding: var(--space-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .brandSection {
+    min-height: 240px;
+    padding: var(--space-lg);
+  }
+
+  .brandContent h1 {
+    font-size: 1.9rem;
+  }
+
+  .card {
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+  }
+
+  .nameFields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.passwordField input {
+  padding-right: 3.25rem;
+}
+
+.passwordToggle {
+  position: absolute;
+  top: 50%;
+  right: var(--space-sm);
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.passwordToggle:hover,
+.passwordToggle:focus-visible {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.passwordToggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}

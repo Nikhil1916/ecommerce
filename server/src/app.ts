@@ -15,7 +15,14 @@ import { checkoutRouter } from "./modules/checkout/routes/checkout.routes";
 import { paymentRouter } from "./modules/payment/routes/payment.routes";
 import { stockNotificationRoutes } from "./modules/notification/stock-notification.module";
 import { importRouter } from "./modules/imports/routes/import.routes";
+import cors from "cors";
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 app.use(requestId);
 app.use(loggerMiddleware);

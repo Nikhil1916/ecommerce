@@ -1,0 +1,53 @@
+{
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "hindi": "Hindi"
+  },
+  "navbar": {
+    "home": "Home",
+    "products": "Products",
+    "cart": "Cart",
+    "login": "Login",
+    "register": "Register",
+    "account": "Account",
+    "logout": "Logout"
+  },
+  "auth": {
+    "register": {
+      "brandTitle": "Everything you need,",
+      "brandTitleHighlight": " all in one place.",
+      "brandDescription": "Discover products you'll love and enjoy a seamless shopping experience.",
+
+      "title": "Create an account",
+      "subtitle": "Already have an account?",
+      "signIn": "Sign in",
+
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email address",
+      "password": "Password",
+
+      "firstNamePlaceholder": "John",
+      "lastNamePlaceholder": "Doe",
+      "emailPlaceholder": "john@example.com",
+      "passwordPlaceholder": "Create a strong password",
+
+      "createAccount": "Create account",
+      "creatingAccount": "Creating account...",
+
+      "passwordHint": "At least 12 characters with uppercase, lowercase, number and special character.",
+
+      "validation": {
+        "firstNameMin": "First name must be at least 2 characters",
+        "firstNameMax": "First name cannot exceed 50 characters",
+        "lastNameMin": "Last name must be at least 2 characters",
+        "lastNameMax": "Last name cannot exceed 50 characters",
+        "email": "Invalid email address",
+        "passwordMin": "Password must be at least 12 characters",
+        "passwordMax": "Password is too long",
+        "passwordPattern": "Password must contain uppercase, lowercase, number and special character"
+      }
+    }
+  }
+}

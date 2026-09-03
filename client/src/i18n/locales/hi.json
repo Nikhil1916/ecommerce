@@ -1,0 +1,30 @@
+{
+  "common": {
+    "language": "भाषा",
+    "english": "अंग्रेज़ी",
+    "hindi": "हिंदी"
+  },
+  "navbar": {
+    "home": "होम",
+    "products": "प्रोडक्ट्स",
+    "cart": "कार्ट",
+    "login": "लॉग इन",
+    "register": "रजिस्टर",
+    "account": "अकाउंट",
+    "logout": "लॉग आउट"
+  },
+  "auth": {
+    "register": {
+      "title": "खाता बनाएं",
+      "subtitle": "क्या आपके पास पहले से अकाउंट है?",
+      "signIn": "साइन इन करें",
+      "firstName": "पहला नाम",
+      "lastName": "उपनाम",
+      "email": "ईमेल पता",
+      "password": "पासवर्ड",
+      "createAccount": "खाता बनाएं",
+      "creatingAccount": "खाता बनाया जा रहा है...",
+      "passwordHint": "कम से कम 12 अक्षर, जिसमें बड़े अक्षर, छोटे अक्षर, नंबर और विशेष अक्षर हों।"
+    }
+  }
+}
