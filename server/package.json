@@ -11,7 +11,8 @@
     "worker:expiry": "tsx src/modules/order/workers/reservation-expiry.worker.ts",
     "worker:back-in-stock": "tsx src/modules/notification/workers/back-in-stock.worker.ts",
     "worker:email": "tsx src/modules/notification/workers/email.worker.ts",
-    "worker:import": "tsx src/modules/imports/workers/parse.worker.ts"
+    "worker:import": "tsx src/modules/imports/workers/parse.worker.ts",
+    "run:prisma": "npx prisma studio"
   },
   "keywords": [],
   "author": "",

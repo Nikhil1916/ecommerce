@@ -48,6 +48,31 @@
         "passwordMax": "Password is too long",
         "passwordPattern": "Password must contain uppercase, lowercase, number and special character"
       }
+    },
+    "login": {
+      "brandTitle": "Welcome",
+      "brandTitleHighlight": " back.",
+      "brandDescription": "Sign in to continue shopping and manage your orders.",
+  
+      "title": "Welcome back",
+      "subtitle": "Don't have an account?",
+      "createAccount": "Create one",
+  
+      "email": "Email address",
+      "password": "Password",
+  
+      "emailPlaceholder": "john@example.com",
+      "passwordPlaceholder": "Enter your password",
+  
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign in",
+      "signin": "Sign in",
+      "signingIn": "Signing in...",
+       "success": "Login successful",
+      "validation": {
+        "email": "Invalid email address",
+        "password": "Password is required"
+      }
     }
   }
 }

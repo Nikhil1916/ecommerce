@@ -36,3 +36,8 @@ export const logoutAll = async () => {
   const response = await api.post("/auth/logout-all");
   return response.data;
 };
+
+export const getMe = async () => {
+  const response = await api.get("/users/me");
+  return response.data;
+};
