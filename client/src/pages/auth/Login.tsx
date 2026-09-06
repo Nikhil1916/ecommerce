@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -13,15 +14,9 @@ import { toast } from "sonner";
 import { getApiErrorMessage } from "../../utils/api-error";
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .email("auth.login.validation.email"),
+  email: z.string().trim().toLowerCase().email("auth.login.validation.email"),
 
-  password: z
-    .string()
-    .min(1, "auth.login.validation.password"),
+  password: z.string().min(1, "auth.login.validation.password"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -31,6 +26,7 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const loginMutation = useLogin();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -38,17 +34,18 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-     mode: "onTouched",
+    mode: "onTouched",
     reValidateMode: "onChange",
+    defaultValues: {
+      email: "nikhilchawla9013@gmail.com",
+      password: "Password@123",
+    },
   });
-
-
 
   const onSubmit = (data: LoginFormData) => {
     console.log("Login:", data);
     loginMutation.mutate(data, {
       onSuccess: (response) => {
-        console.log("Login successful:", response);
         dispatch(setUser(response.data.user));
         toast.success(t("auth.login.success"));
         navigate("/dashboard");
@@ -56,11 +53,9 @@ const Login = () => {
       onError: (error) => {
         console.error("Login failed:", error);
         toast.error(getApiErrorMessage(error));
-      }
-    })
+      },
+    });
   };
-
-
 
   return (
     <main className={styles.page}>
@@ -84,9 +79,7 @@ const Login = () => {
 
             <p>
               {t("auth.login.subtitle")}{" "}
-              <Link to="/register">
-                {t("auth.login.createAccount")}
-              </Link>
+              <Link to="/register">{t("auth.login.createAccount")}</Link>
             </p>
           </div>
 
@@ -96,9 +89,7 @@ const Login = () => {
             noValidate
           >
             <div className={styles.formGroup}>
-              <label htmlFor="email">
-                {t("auth.login.email")}
-              </label>
+              <label htmlFor="email">{t("auth.login.email")}</label>
 
               <input
                 id="email"
@@ -117,22 +108,32 @@ const Login = () => {
 
             <div className={styles.formGroup}>
               <div className={styles.labelRow}>
-                <label htmlFor="password">
-                  {t("auth.login.password")}
-                </label>
+                <label htmlFor="password">{t("auth.login.password")}</label>
 
                 <Link to="/forgot-password">
                   {t("auth.login.forgotPassword")}
                 </Link>
               </div>
 
-              <input
-                id="password"
-                type="password"
-                placeholder={t("auth.login.passwordPlaceholder")}
-                {...register("password")}
-                className={errors.password ? styles.inputError : ""}
-              />
+              <div className={styles.passwordField}>
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("auth.login.passwordPlaceholder")}
+                  {...register("password")}
+                  className={errors.password ? styles.inputError : ""}
+                />
+
+                <button
+                  type="button"
+                  className={styles.passwordToggle}
+                  onClick={() => setShowPassword((current) => !current)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  title={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? "◉" : "◌"}
+                </button>
+              </div>
 
               {errors.password && (
                 <span className={styles.error}>
@@ -146,9 +147,9 @@ const Login = () => {
               className={styles.submitButton}
               disabled={loginMutation.isPending}
             >
-              {
-                loginMutation.isPending ? t("auth.login.signingIn") : t("auth.login.signin")
-              }
+              {loginMutation.isPending
+                ? t("auth.login.signingIn")
+                : t("auth.login.signin")}
             </button>
           </form>
         </div>
