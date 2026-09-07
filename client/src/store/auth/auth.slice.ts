@@ -11,10 +11,12 @@ export interface User {
 
 interface AuthState {
   user: User | null;
+  status: "loading" | "authenticated" | "unauthenticated"
 }
 
 const initialState: AuthState = {
   user: null,
+  status: "loading",
 };
 
 const authSlice = createSlice({
@@ -25,14 +27,20 @@ const authSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+      state.status = "authenticated";
     },
 
     clearUser: (state) => {
       state.user = null;
+      state.status = "unauthenticated";
     },
+
+    setAuthLoading: (state) => {
+      state.status = "loading";
+    }
   },
 });
 
-export const { setUser, clearUser } = authSlice.actions;
+export const { setUser, clearUser, setAuthLoading } = authSlice.actions;
 
 export default authSlice.reducer;

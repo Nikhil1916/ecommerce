@@ -3,14 +3,14 @@ import { useAppSelector } from "../store/hooks";
 
 const ProtectedRoute = () => {
   const user = useAppSelector((state) => state.auth.user);
-  console.log("ProtectedRoute user:", user);
+  const authLoading = useAppSelector(
+    (state) => state.auth.status === "loading"
+  );
 
-  if (!user) {
-    console.log("🚨 REDIRECTING TO LOGIN");
+  if (!user && !authLoading) {
     return <Navigate to="/login" replace />;
   }
 
-  console.log("✅ ALLOWING DASHBOARD");
   return <Outlet />;
 };
 
