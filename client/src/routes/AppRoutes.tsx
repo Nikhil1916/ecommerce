@@ -3,6 +3,7 @@ import ProductList from "../pages/products/ProductList";
 import  Register  from "../pages/auth/Register";
 import Login from "../pages/auth/Login";
 import ProtectedRoute from "./ProtectedRoute";
+import Dashboard from "../pages/dashboard/Dashboard";
 
 const AppRoutes = () => {
   return (
@@ -13,7 +14,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<ProductList />} />
+          <Route path="/dashboard" element={<Dashboard  />} />
         </Route>
       </Routes>
     </BrowserRouter>

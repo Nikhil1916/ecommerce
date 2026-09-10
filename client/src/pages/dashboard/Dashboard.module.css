@@ -1,0 +1,165 @@
+.container {
+  padding: 32px;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.header p {
+  margin: 8px 0 0;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.yearSelect {
+  min-width: 110px;
+  padding: 10px 36px 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 15px;
+  cursor: pointer;
+  outline: none;
+}
+
+.yearSelect:focus {
+  border-color: #111827;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.card {
+  min-width: 0;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.cardLabel {
+  display: block;
+  margin-bottom: 12px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cardValue {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+/* Skeleton */
+
+.skeletonTitle,
+.skeletonSubtitle,
+.skeletonSelect,
+.skeletonLabel,
+.skeletonValue {
+  position: relative;
+  overflow: hidden;
+  background: #e5e7eb;
+  border-radius: 6px;
+}
+
+.skeletonTitle::after,
+.skeletonSubtitle::after,
+.skeletonSelect::after,
+.skeletonLabel::after,
+.skeletonValue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonTitle {
+  width: 180px;
+  height: 32px;
+}
+
+.skeletonSubtitle {
+  width: 260px;
+  height: 16px;
+  margin-top: 8px;
+}
+
+.skeletonSelect {
+  width: 110px;
+  height: 40px;
+}
+
+.skeletonLabel {
+  width: 100px;
+  height: 16px;
+  margin-bottom: 12px;
+}
+
+.skeletonValue {
+  width: 120px;
+  height: 28px;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .container {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+
+  .yearSelect {
+    width: 100%;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}

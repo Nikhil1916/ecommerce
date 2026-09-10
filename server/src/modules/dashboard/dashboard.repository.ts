@@ -15,6 +15,8 @@ export class DashboardRepository {
   async getDashboardSummary(year: number): Promise<DashboardSummary> {
     const startOfYear = new Date(year, 0, 1);
     const startOfNextYear = new Date(year + 1, 0, 1);
+    console.log("DashboardRepository.getDashboardSummary - startOfYear:", startOfYear);
+    console.log("DashboardRepository.getDashboardSummary - startOfNextYear:", startOfNextYear);
     const [orderResult, productResult] = await Promise.all([
       OrderModel.aggregate([
         {
@@ -177,6 +179,7 @@ export class DashboardRepository {
   }
 
   async getTopSellingProducts(year: number): Promise<TopSellingProduct[]> {
+    console.log("DashboardRepository.getTopSellingProducts - year:", year, typeof year);
     const startOfYear = new Date(year, 0, 1);
     const startOfNextYear = new Date(year + 1, 0, 1);
     return OrderModel.aggregate([

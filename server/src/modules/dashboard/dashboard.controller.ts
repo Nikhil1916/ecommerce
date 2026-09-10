@@ -9,7 +9,9 @@ export class DashboardController {
 
   getDashboard = asyncHandler(async (req: Request, res: Response) => {
     const { year } = req.query as unknown as DashboardQuery;
-    const dashboard = await this.dashboardService.getDashboard(year);
+    console.log("DashboardController.getDashboard - year:", year);
+    console.log("YEAR:", year, typeof year);
+    const dashboard = await this.dashboardService.getDashboard(Number(year));
 
     res
       .status(200)

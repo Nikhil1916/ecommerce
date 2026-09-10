@@ -74,5 +74,16 @@
         "password": "Password is required"
       }
     }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your store performance",
+    "totalSales": "Total Sales",
+    "paidOrders": "Paid Orders",
+    "totalProducts": "Total Products",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock",
+    "loading": "Loading dashboard...",
+    "error": "Failed to load dashboard."
   }
 }

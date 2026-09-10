@@ -33,10 +33,10 @@ export interface RecentOrder {
   totalAmount: number;
   status: string;
   paymentStatus: string;
-  createdAt: Date;
+  createdAt: string;
 }
 
-export interface DashboardResponse {
+export interface DashboardData {
   year: number;
   summary: DashboardSummary;
   salesByMonth: SalesByMonth[];
@@ -46,7 +46,9 @@ export interface DashboardResponse {
   recentOrders: RecentOrder[];
 }
 
-export interface DashboardQuery {
-  year: number;
+export interface DashboardApiResponse {
+  success: boolean;
+  message: string;
+  data: DashboardData;
+  requestId: string;
 }
-
