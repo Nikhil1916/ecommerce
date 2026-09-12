@@ -79,18 +79,17 @@ const Dashboard = () => {
           value={dashboard.summary.outOfStockProducts}
         />
       </section>
-
-      {/* <section className={styles.charts}></section>
-        <div className={styles.chartContainer}>
-          <h2>{t("dashboard.salesByMonth")}</h2>
-          <p>{t("dashboard.salesByMonthDescription")}</p>
-          <SalesChart data={dashboard.salesByMonth} />
-        </div> */}
+      <section className={styles.chartsGrid}>
         <SalesChart data={dashboard.salesByMonth} />
+
         <OrdersChart data={dashboard.ordersByMonth} />
+
         <OrderStatusChart data={dashboard.ordersByStatus} />
+
         <TopProductsTable data={dashboard.topProducts} />
-        <RecentOrdersTable data={dashboard.recentOrders} />
+      </section>
+
+      <RecentOrdersTable data={dashboard.recentOrders} />
     </main>
   );
 };

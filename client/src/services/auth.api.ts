@@ -27,11 +27,6 @@ export const refreshToken = async () => {
   return response.data;
 };
 
-export const logout = async () => {
-  const response = await api.post("/auth/logout");
-  return response.data;
-};
-
 export const logoutAll = async () => {
   const response = await api.post("/auth/logout-all");
   return response.data;
@@ -39,5 +34,10 @@ export const logoutAll = async () => {
 
 export const getMe = async () => {
   const response = await api.get("/users/me");
+  return response.data;
+};
+
+export const logoutUser = async () => {
+  const response = await api.post("/auth/logout");
   return response.data;
 };

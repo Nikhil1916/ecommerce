@@ -1,20 +1,15 @@
 import api from "./api";
 
-export interface ProductQuery {
-  page?: number;
-  limit?: number;
-  search?: string;
-  sort?: string;
-  order?: "asc" | "desc";
-  fields?: string;
-  categoryId?: string;
-  minPrice?: number;
-  maxPrice?: number;
-}
+import type {
+  ProductApiResponse,
+  ProductQueryParams,
+} from "../types/product.types";
 
-export const getProducts = async (query?: ProductQuery) => {
-  const response = await api.get("/products", {
-    params: query,
+export const getProducts = async (
+  params: ProductQueryParams = {},
+): Promise<ProductApiResponse> => {
+  const response = await api.get<ProductApiResponse>("/products", {
+    params,
   });
 
   return response.data;
