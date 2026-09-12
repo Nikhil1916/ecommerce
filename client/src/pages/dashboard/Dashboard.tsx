@@ -5,6 +5,11 @@ import { formatCurrency } from "../../utils/format-currency";
 import DashboardSkeleton from "./DashboardSkeleton";
 import DashboardStatCard from "./components/DashboardStatCard";
 import { useState } from "react";
+import SalesChart from "./components/SalesChart";
+import OrdersChart from "./components/OrdersChart";
+import OrderStatusChart from "./components/OrderStatusChart";
+import TopProductsTable from "./components/TopProductsTable";
+import RecentOrdersTable from "./components/RecentOrdersTable";
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -74,6 +79,18 @@ const Dashboard = () => {
           value={dashboard.summary.outOfStockProducts}
         />
       </section>
+
+      {/* <section className={styles.charts}></section>
+        <div className={styles.chartContainer}>
+          <h2>{t("dashboard.salesByMonth")}</h2>
+          <p>{t("dashboard.salesByMonthDescription")}</p>
+          <SalesChart data={dashboard.salesByMonth} />
+        </div> */}
+        <SalesChart data={dashboard.salesByMonth} />
+        <OrdersChart data={dashboard.ordersByMonth} />
+        <OrderStatusChart data={dashboard.ordersByStatus} />
+        <TopProductsTable data={dashboard.topProducts} />
+        <RecentOrdersTable data={dashboard.recentOrders} />
     </main>
   );
 };

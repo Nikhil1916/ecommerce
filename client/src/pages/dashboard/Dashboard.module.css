@@ -163,3 +163,96 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.chartCard {
+  margin-top: 24px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.chartHeader {
+  margin-bottom: 20px;
+}
+
+.chartHeader h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chartContainer {
+  position: relative;
+  height: 320px;
+}
+
+.tableCard {
+  margin-top: 24px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tableHeader {
+  padding: 24px 24px 16px;
+}
+
+.tableHeader h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.table th {
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.table td {
+  color: #111827;
+  font-size: 14px;
+}
+
+.table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.emptyState {
+  padding: 40px 24px;
+  text-align: center;
+  color: #6b7280;
+}
+
+@media (max-width: 700px) {
+  .tableHeader {
+    padding: 18px;
+  }
+
+  .table th,
+  .table td {
+    padding: 14px 18px;
+    white-space: nowrap;
+  }
+}
