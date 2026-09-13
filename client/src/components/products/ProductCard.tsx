@@ -1,6 +1,6 @@
 
-import type { Product } from "../../../types/product.types";
-import { formatCurrency } from "../../../utils/format-currency";
+import type { Product } from "../../types/product.types";
+import { formatCurrency } from "../../utils/format-currency";
 import styles from "./ProductCard.module.css";
 interface ProductCardProps {
   product: Product;
