@@ -7,6 +7,10 @@ export class CategoryService {
     private readonly categoryRepository: ICategoryRepository
   ) {}
 
+  async getCategories(): Promise<Category[]> {
+    return this.categoryRepository.findAll();
+  }
+
   async createCategory(data: Omit<Category, "createdAt" | "updatedAt">): Promise<Category> {
     const existingCategory =
       await this.categoryRepository.findByName(data.name);

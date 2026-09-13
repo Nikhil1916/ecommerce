@@ -7,6 +7,10 @@ export class MongoCategoryRepository implements ICategoryRepository {
     return category.toObject();
   }
 
+  async findAll(): Promise<Category[]> {
+    return CategoryModel.find({ isActive: true }).lean();
+  }
+
   async findById(id: string): Promise<Category | null> {
     return CategoryModel.findOne({
       _id: id,

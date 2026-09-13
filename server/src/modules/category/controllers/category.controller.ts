@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ApiResponse } from "../../../core/ApiResponse";
 import { Category } from "../models/category.model";
 import { CategoryService } from "../services/category.service";
 
@@ -6,6 +7,22 @@ export class CategoryController {
   constructor(
     private readonly categoryService: CategoryService
   ) {}
+
+  getCategories = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const categories = await this.categoryService.getCategories();
+      return res.status(201).json({
+        success: true,
+        data: categories,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   createCategory = async (
     req: Request<{}, {}, Category>,
