@@ -1,0 +1,124 @@
+.page {
+  padding: 32px 20px 60px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.backLink {
+  width: 130px;
+  height: 20px;
+  margin-bottom: 24px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  animation: shimmer 1.5s infinite;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  background: #e5e7eb;
+  animation: shimmer 1.5s infinite;
+}
+
+.info {
+  width: 100%;
+}
+
+.title {
+  width: 80%;
+  height: 38px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  animation: shimmer 1.5s infinite;
+}
+
+.sku {
+  width: 120px;
+  height: 16px;
+  margin-bottom: 24px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  animation: shimmer 1.5s infinite;
+}
+
+.price {
+  width: 150px;
+  height: 32px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  animation: shimmer 1.5s infinite;
+}
+
+.stock {
+  width: 110px;
+  height: 30px;
+  margin-bottom: 28px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  animation: shimmer 1.5s infinite;
+}
+
+.descriptionTitle {
+  width: 110px;
+  height: 22px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  animation: shimmer 1.5s infinite;
+}
+
+.descriptionLine {
+  width: 100%;
+  height: 16px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  animation: shimmer 1.5s infinite;
+}
+
+.descriptionLineShort {
+  width: 75%;
+  height: 16px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 24px 16px 40px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}

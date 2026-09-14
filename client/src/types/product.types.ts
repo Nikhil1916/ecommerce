@@ -54,3 +54,10 @@ export interface ProductApiResponse {
 
   requestId?: string;
 }
+
+export interface ProductDetailsApiResponse {
+  success: boolean;
+  message?: string;
+  data: Product;
+  requestId?: string;
+}

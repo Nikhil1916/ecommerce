@@ -8,6 +8,7 @@ import ProtectedRoute from "./ProtectedRoute";
 
 import AppLayout from "../components/layout/AppLayout";
 import ProductList from "../pages/products/ProductList";
+import ProductDetails from "../pages/products/ProductDetails";
 
 const AppRoutes = () => {
   return (
@@ -22,6 +23,7 @@ const AppRoutes = () => {
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/products" element={<ProductList />} />
+            <Route path="/products/:id" element={<ProductDetails />} />
           </Route>
         </Route>
       </Routes>
