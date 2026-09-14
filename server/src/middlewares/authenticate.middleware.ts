@@ -2,20 +2,19 @@ import { NextFunction, Request, Response } from "express";
 import { AuthRepository } from "../modules/auth/repositories/auth.repository";
 import { ApiError } from "../core/ApiError";
 import { jwtService } from "../utils/jwt.util";
+import jwt from "jsonwebtoken";
 
 export class AuthMiddleware {
-  constructor(
-    private readonly authRepository: AuthRepository
-  ) {}
+  constructor(private readonly authRepository: AuthRepository) {}
 
   authenticate = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
-//         console.log(req.cookies);
-// console.log(req.headers.cookie);
+      //         console.log(req.cookies);
+      // console.log(req.headers.cookie);
       const accessToken = req.cookies.accessToken;
 
       if (!accessToken) {
@@ -39,21 +38,18 @@ export class AuthMiddleware {
           403,
           "Your account has been disabled.",
           [],
-          req.requestId
+          req.requestId,
         );
       }
 
       const tokenIssuedAt = new Date(payload.iat * 1000);
 
-      if (
-        user.lastPasswordUpdatedAt.getTime() >
-        tokenIssuedAt.getTime()
-      ) {
+      if (user.lastPasswordUpdatedAt.getTime() > tokenIssuedAt.getTime()) {
         throw new ApiError(
           401,
           "Session expired. Please login again.",
           [],
-            req.requestId
+          req.requestId,
         );
       }
 
@@ -67,6 +63,10 @@ export class AuthMiddleware {
 
       next();
     } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        next(new ApiError(401, "Unauthorized.", [], req.requestId));
+        return;
+      }
       next(error);
     }
   };

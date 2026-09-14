@@ -10,6 +10,7 @@ import "./styles/globals.css";
 import App from "./App";
 import { store, persistor } from "./store";
 import i18n from "./i18n";
+import { BrowserRouter } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +19,9 @@ createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
         </QueryClientProvider>
       </PersistGate>
     </Provider>

@@ -11,7 +11,7 @@ import ProductList from "../pages/products/ProductList";
 
 const AppRoutes = () => {
   return (
-    <BrowserRouter>
+    // <BrowserRouter>
       <Routes>
         {/* Public routes */}
         <Route path="/register" element={<Register />} />
@@ -25,7 +25,7 @@ const AppRoutes = () => {
           </Route>
         </Route>
       </Routes>
-    </BrowserRouter>
+    // </BrowserRouter>
   );
 };
 

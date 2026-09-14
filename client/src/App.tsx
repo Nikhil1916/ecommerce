@@ -1,14 +1,21 @@
-import AppRoutes from "./routes/AppRoutes";
-import { Toaster } from "sonner";
-import { useAppDispatch } from "./store/hooks";
-import { useMe } from "./hooks/use-me";
-import { clearUser, setUser } from "./store/auth/auth.slice";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { Toaster } from "sonner";
+
+import AppRoutes from "./routes/AppRoutes";
+import { useAppDispatch } from "./store/hooks";
+import { clearUser, setUser } from "./store/auth/auth.slice";
+import { useMe } from "./hooks/use-me";
 
 function App() {
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
-  const { data, isError } = useMe();
+  const isPublicRoute =
+    location.pathname === "/login" ||
+    location.pathname === "/register";
+
+  const { data, isError } = useMe(!isPublicRoute);
 
   useEffect(() => {
     if (data?.data) {
@@ -18,7 +25,7 @@ function App() {
     if (isError) {
       dispatch(clearUser());
     }
-  }, [dispatch, data, isError]);
+  }, [data, isError, dispatch]);
 
   return (
     <>
