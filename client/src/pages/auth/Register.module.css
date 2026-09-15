@@ -13,7 +13,7 @@
   justify-content: center;
   padding: var(--space-2xl);
   background: var(--color-primary);
-  color: white;
+  color: var(--color-text-on-primary);
 }
 
 .brandContent {
@@ -72,7 +72,7 @@
 .header h2 {
   margin-bottom: var(--space-sm);
   font-size: var(--font-size-2xl);
-  line-height: 1.2;
+  line-height: var(--line-height-tight);
 }
 
 .header p {
@@ -81,7 +81,7 @@
 
 .header a {
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   transition: color var(--transition-fast);
 }
 
@@ -111,7 +111,7 @@
 
 .formGroup label {
   font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .passwordField {
@@ -134,16 +134,16 @@
 }
 
 .formGroup input::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-subtle);
 }
 
 .formGroup input:hover {
-  border-color: #c4c7ce;
+  border-color: var(--color-border-hover);
 }
 
 .formGroup input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .formGroup input.inputError {
@@ -157,7 +157,7 @@
 
 .passwordHint {
   color: var(--color-text-muted);
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   line-height: 1.4;
 }
 
@@ -168,8 +168,8 @@
   border: none;
   border-radius: var(--radius-md);
   background: var(--color-primary);
-  color: white;
-  font-weight: 700;
+  color: var(--color-text-on-primary);
+  font-weight: var(--font-weight-bold);
   transition:
     background var(--transition-normal),
     transform var(--transition-fast),

@@ -12,8 +12,8 @@
   width: 130px;
   height: 20px;
   margin-bottom: 24px;
-  border-radius: 6px;
-  background: #e5e7eb;
+  border-radius: var(--radius-sm);
+  background: var(--color-skeleton);
   animation: shimmer 1.5s infinite;
 }
 
@@ -27,8 +27,8 @@
 .image {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 12px;
-  background: #e5e7eb;
+  border-radius: var(--radius-md);
+  background: var(--color-skeleton);
   animation: shimmer 1.5s infinite;
 }
 
@@ -40,8 +40,8 @@
   width: 80%;
   height: 38px;
   margin-bottom: 12px;
-  border-radius: 6px;
-  background: #e5e7eb;
+  border-radius: var(--radius-sm);
+  background: var(--color-skeleton);
   animation: shimmer 1.5s infinite;
 }
 
@@ -49,8 +49,8 @@
   width: 120px;
   height: 16px;
   margin-bottom: 24px;
-  border-radius: 6px;
-  background: #e5e7eb;
+  border-radius: var(--radius-sm);
+  background: var(--color-skeleton);
   animation: shimmer 1.5s infinite;
 }
 
@@ -58,8 +58,8 @@
   width: 150px;
   height: 32px;
   margin-bottom: 16px;
-  border-radius: 6px;
-  background: #e5e7eb;
+  border-radius: var(--radius-sm);
+  background: var(--color-skeleton);
   animation: shimmer 1.5s infinite;
 }
 
@@ -67,8 +67,8 @@
   width: 110px;
   height: 30px;
   margin-bottom: 28px;
-  border-radius: 6px;
-  background: #e5e7eb;
+  border-radius: var(--radius-sm);
+  background: var(--color-skeleton);
   animation: shimmer 1.5s infinite;
 }
 
@@ -76,8 +76,8 @@
   width: 110px;
   height: 22px;
   margin-bottom: 12px;
-  border-radius: 6px;
-  background: #e5e7eb;
+  border-radius: var(--radius-sm);
+  background: var(--color-skeleton);
   animation: shimmer 1.5s infinite;
 }
 
@@ -85,16 +85,16 @@
   width: 100%;
   height: 16px;
   margin-bottom: 10px;
-  border-radius: 6px;
-  background: #e5e7eb;
+  border-radius: var(--radius-sm);
+  background: var(--color-skeleton);
   animation: shimmer 1.5s infinite;
 }
 
 .descriptionLineShort {
   width: 75%;
   height: 16px;
-  border-radius: 6px;
-  background: #e5e7eb;
+  border-radius: var(--radius-sm);
+  background: var(--color-skeleton);
   animation: shimmer 1.5s infinite;
 }
 

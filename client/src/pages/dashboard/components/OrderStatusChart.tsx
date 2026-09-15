@@ -23,12 +23,24 @@ interface OrderStatusChartProps {
 
 const OrderStatusChart = ({ data }: OrderStatusChartProps) => {
   const statusColors: Record<string, string> = {
-    PENDING: "#f59e0b",
-    CONFIRMED: "#22c55e",
-    SHIPPED: "#3b82f6",
-    DELIVERED: "#8b5cf6",
-    CANCELLED: "#6b7280",
-    EXPIRED: "#ef4444",
+    PENDING: getComputedStyle(document.documentElement)
+      .getPropertyValue("--chart-pending")
+      .trim(),
+    CONFIRMED: getComputedStyle(document.documentElement)
+      .getPropertyValue("--chart-confirmed")
+      .trim(),
+    SHIPPED: getComputedStyle(document.documentElement)
+      .getPropertyValue("--chart-shipped")
+      .trim(),
+    DELIVERED: getComputedStyle(document.documentElement)
+      .getPropertyValue("--chart-delivered")
+      .trim(),
+    CANCELLED: getComputedStyle(document.documentElement)
+      .getPropertyValue("--chart-cancelled")
+      .trim(),
+    EXPIRED: getComputedStyle(document.documentElement)
+      .getPropertyValue("--chart-expired")
+      .trim(),
   };
 
   const chartData = {
@@ -39,10 +51,16 @@ const OrderStatusChart = ({ data }: OrderStatusChartProps) => {
         data: data.map((item) => item.count),
 
         backgroundColor: data.map(
-          (item) => statusColors[item.status] ?? "#9ca3af",
+          (item) =>
+            statusColors[item.status] ??
+            getComputedStyle(document.documentElement)
+              .getPropertyValue("--color-text-subtle")
+              .trim(),
         ),
 
-        borderColor: "#ffffff",
+        borderColor: getComputedStyle(document.documentElement)
+          .getPropertyValue("--color-text-on-primary")
+          .trim(),
         borderWidth: 2,
 
         hoverOffset: 6,

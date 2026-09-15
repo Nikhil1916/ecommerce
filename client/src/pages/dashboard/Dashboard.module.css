@@ -1,5 +1,5 @@
 .container {
-  padding: 32px;
+  padding: var(--space-xl);
   min-height: 100%;
 }
 
@@ -7,35 +7,35 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
 .header h1 {
   margin: 0;
-  font-size: 32px;
-  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
 }
 
 .header p {
-  margin: 8px 0 0;
-  font-size: 16px;
-  color: #6b7280;
+  margin: var(--space-sm) 0 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
 }
 
 .yearSelect {
   min-width: 110px;
   padding: 10px 36px 10px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background: #ffffff;
-  font-size: 15px;
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius-md);
+  background: var(--color-input-background);
+  font-size: var(--font-size-base);
   cursor: pointer;
   outline: none;
 }
 
 .yearSelect:focus {
-  border-color: #111827;
+  border-color: var(--color-input-focus);
 }
 
 .cards {
@@ -47,24 +47,24 @@
 .card {
   min-width: 0;
   padding: 22px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .cardLabel {
   display: block;
   margin-bottom: 12px;
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 500;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 .cardValue {
   display: block;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
   word-break: break-word;
 }
 
@@ -77,8 +77,8 @@
 .skeletonValue {
   position: relative;
   overflow: hidden;
-  background: #e5e7eb;
-  border-radius: 6px;
+  background: var(--color-skeleton);
+  border-radius: var(--radius-sm);
 }
 
 .skeletonTitle::after,
@@ -93,7 +93,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.6),
+    var(--color-skeleton-highlight),
     transparent
   );
   animation: shimmer 1.5s infinite;
@@ -168,9 +168,9 @@
 .chartCard {
   margin-top: 24px;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .chartHeader {
@@ -179,8 +179,8 @@
 
 .chartHeader h2 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
 }
 
 .chartContainer {
@@ -190,9 +190,9 @@
 
 .tableCard {
   margin-top: 24px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
@@ -202,8 +202,8 @@
 
 .tableHeader h2 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
 }
 
 .tableWrapper {
@@ -220,29 +220,29 @@
 .table th,
 .table td {
   padding: 16px 24px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-table-border);
 }
 
 .table th {
-  background: #f9fafb;
-  color: #6b7280;
+  background: var(--color-table-header);
+  color: var(--color-text-muted);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .table td {
-  color: #111827;
-  font-size: 14px;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
 }
 
 .table tbody tr:hover {
-  background: #f9fafb;
+  background: var(--color-table-hover);
 }
 
 .emptyState {
   padding: 40px 24px;
   text-align: center;
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 @media (max-width: 700px) {

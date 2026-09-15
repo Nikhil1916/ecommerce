@@ -1,29 +1,119 @@
 :root {
-  /* Colors */
+  /* =========================
+     Colors
+     ========================= */
+
+  /* Brand */
   --color-primary: #6c4df6;
   --color-primary-dark: #5740d6;
   --color-primary-light: #f1efff;
+  --color-text-on-primary: #ffffff;
 
+  /* Text */
   --color-text: #171717;
   --color-text-muted: #6b7280;
+  --color-text-subtle: #9ca3af;
 
+  /* Surfaces */
   --color-background: #f8f8fc;
   --color-surface: #ffffff;
+  --color-surface-muted: #f9fafb;
+  --color-surface-disabled: #f3f4f6;
+
+  /* Borders */
   --color-border: #e5e7eb;
+  --color-border-hover: #c4c7ce;
+  --color-border-strong: #d1d5db;
 
+  /* Inputs / Focus */
+  --color-input-background: var(--color-surface);
+  --color-input-border: var(--color-border);
+  --color-input-focus: var(--color-primary);
+  --color-focus-ring: var(--color-primary-light);
+
+  /* Links */
+  --color-link: var(--color-primary);
+  --color-link-hover: var(--color-primary-dark);
+
+  /* Error */
   --color-error: #dc2626;
+  --color-error-background: #fee2e2;
+  --color-error-text: #991b1b;
 
-  /* Typography */
-  --font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  /* Success */
+  --color-success: #16a34a;
+  --color-success-background: #dcfce7;
+  --color-success-text: #166534;
+
+  /* Warning */
+  --color-warning: #d97706;
+  --color-warning-background: #fef3c7;
+  --color-warning-text: #92400e;
+
+  /* Info */
+  --color-info: #2563eb;
+  --color-info-background: #eff6ff;
+  --color-info-text: #1d4ed8;
+
+  /* Disabled */
+  --color-disabled-background: #f3f4f6;
+  --color-disabled-text: #9ca3af;
+
+  /* Skeleton */
+  --color-skeleton: #e5e7eb;
+  --color-skeleton-highlight: rgba(255, 255, 255, 0.6);
+
+  /* Overlay */
+  --color-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Tables */
+  --color-table-border: var(--color-border);
+  --color-table-header: var(--color-surface-muted);
+  --color-table-hover: var(--color-surface-muted);
+
+  /* =========================
+     Chart Colors
+     ========================= */
+
+  --chart-pending: #f59e0b;
+  --chart-confirmed: #22c55e;
+  --chart-shipped: #3b82f6;
+  --chart-delivered: #8b5cf6;
+  --chart-cancelled: #6b7280;
+  --chart-expired: #ef4444;
+
+  /* =========================
+     Typography
+     ========================= */
+
+  --font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
     sans-serif;
 
+  --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.125rem;
   --font-size-xl: 1.5rem;
   --font-size-2xl: 2rem;
 
-  /* Spacing */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+
+  /* =========================
+     Spacing
+     ========================= */
+
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
@@ -31,16 +121,29 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
 
-  /* Radius */
+  /* =========================
+     Border Radius
+     ========================= */
+
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
+  --radius-pill: 999px;
 
-  /* Shadows */
+  /* =========================
+     Shadows
+     ========================= */
+
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
 
-  /* Transitions */
+  /* =========================
+     Transitions
+     ========================= */
+
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
+  --transition-slow: 500ms ease;
 }

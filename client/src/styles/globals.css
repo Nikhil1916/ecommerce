@@ -6,7 +6,7 @@
 
 html {
   font-family: var(--font-family);
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
 body {
@@ -14,7 +14,7 @@ body {
   min-height: 100vh;
   background: var(--color-background);
   color: var(--color-text);
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
 }
 
 button,
