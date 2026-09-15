@@ -147,3 +147,75 @@
   --transition-normal: 250ms ease;
   --transition-slow: 500ms ease;
 }
+
+
+
+[data-theme="dark"] {
+  /* Brand */
+  --color-primary: #8b7cf6;
+  --color-primary-dark: #a394ff;
+  --color-primary-light: #2d2750;
+  --color-text-on-primary: #ffffff;
+
+  /* Text */
+  --color-text: #f5f5f5;
+  --color-text-muted: #a1a1aa;
+  --color-text-subtle: #71717a;
+
+  /* Surfaces */
+  --color-background: #111111;
+  --color-surface: #1c1c1c;
+  --color-surface-muted: #252525;
+  --color-surface-disabled: #2a2a2a;
+
+  /* Borders */
+  --color-border: #333333;
+  --color-border-hover: #4b4b4b;
+  --color-border-strong: #525252;
+
+  /* Inputs / Focus */
+  --color-input-background: var(--color-surface);
+  --color-input-border: var(--color-border);
+  --color-input-focus: var(--color-primary);
+  --color-focus-ring: var(--color-primary-light);
+
+  /* Links */
+  --color-link: var(--color-primary);
+  --color-link-hover: var(--color-primary-dark);
+
+  /* Error */
+  --color-error: #f87171;
+  --color-error-background: #451a1a;
+  --color-error-text: #fca5a5;
+
+  /* Success */
+  --color-success: #4ade80;
+  --color-success-background: #16351f;
+  --color-success-text: #86efac;
+
+  /* Warning */
+  --color-warning: #fbbf24;
+  --color-warning-background: #3b2f0b;
+  --color-warning-text: #fcd34d;
+
+  /* Info */
+  --color-info: #60a5fa;
+  --color-info-background: #172554;
+  --color-info-text: #93c5fd;
+
+  /* Disabled */
+  --color-disabled-background: #2a2a2a;
+  --color-disabled-text: #71717a;
+
+  /* Skeleton */
+  --color-skeleton: #2a2a2a;
+  --color-skeleton-highlight: rgba(255, 255, 255, 0.08);
+
+  /* Overlay */
+  --color-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Tables */
+  --color-table-border: var(--color-border);
+  --color-table-header: var(--color-surface-muted);
+  --color-table-hover: var(--color-surface-muted);
+}
