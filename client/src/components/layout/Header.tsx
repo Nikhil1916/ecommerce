@@ -4,6 +4,7 @@ import { clearUser } from "../../store/auth/auth.slice";
 import { useLogout } from "../../hooks/useLogout";
 
 import styles from "./Header.module.css";
+import ThemeSelector from "../common/ThemeSelector";
 
 const Header = () => {
   const user = useAppSelector((state) => state.auth.user);
@@ -64,6 +65,8 @@ const Header = () => {
               {user.firstName} {user.lastName}
             </span>
           )}
+
+          <ThemeSelector/>
 
           <button
             type="button"

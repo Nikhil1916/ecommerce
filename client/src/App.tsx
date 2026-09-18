@@ -8,6 +8,7 @@ import { clearUser, setUser } from "./store/auth/auth.slice";
 import { useMe } from "./hooks/use-me";
 
 function App() {
+
   const dispatch = useAppDispatch();
   const location = useLocation();
 

@@ -12,6 +12,7 @@ import { useAppDispatch } from "../../store/hooks";
 import { setUser } from "../../store/auth/auth.slice";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "../../utils/api-error";
+import ThemeSelector from "../../components/common/ThemeSelector";
 
 const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email("auth.login.validation.email"),
@@ -73,6 +74,9 @@ const Login = () => {
       </section>
 
       <section className={styles.formSection}>
+         <div className={styles.themeSelector}>
+    <ThemeSelector />
+  </div>
         <div className={styles.card}>
           <div className={styles.header}>
             <h2>{t("auth.login.title")}</h2>

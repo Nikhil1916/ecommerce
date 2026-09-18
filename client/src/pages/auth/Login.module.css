@@ -312,3 +312,13 @@
     gap: var(--space-xs);
   }
 }
+
+.formSection {
+  position: relative;
+}
+
+.themeSelector {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+}

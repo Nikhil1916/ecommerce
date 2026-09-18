@@ -290,3 +290,15 @@
   outline: 2px solid var(--color-primary);
   outline-offset: 1px;
 }
+
+.formSection {
+  position: relative;
+    padding-top: 80px;
+}
+
+.themeSelector {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  /* margin-bottom: 20px; */
+}

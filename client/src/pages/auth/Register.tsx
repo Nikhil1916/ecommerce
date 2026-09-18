@@ -9,6 +9,7 @@ import styles from "./Register.module.css";
 import { useRegister } from "../../hooks/useRegister";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "../../utils/api-error";
+import ThemeSelector from "../../components/common/ThemeSelector";
 
 const registerSchema = z.object({
   firstName: z
@@ -64,8 +65,8 @@ const Register = () => {
         navigate("/login");
       },
       onError: (error) => {
-      toast.error(getApiErrorMessage(error));
-    },
+        toast.error(getApiErrorMessage(error));
+      },
     });
   };
 
@@ -85,6 +86,9 @@ const Register = () => {
       </section>
 
       <section className={styles.formSection}>
+        <div className={styles.themeSelector}>
+          <ThemeSelector />
+        </div>
         <div className={styles.card}>
           <div className={styles.header}>
             <h2>{t("auth.register.title")}</h2>
