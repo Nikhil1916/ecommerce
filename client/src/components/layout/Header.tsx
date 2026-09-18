@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { clearUser } from "../../store/auth/auth.slice";
 import { useLogout } from "../../hooks/useLogout";
+import { useCart } from "../../hooks/useCart";
 
 import styles from "./Header.module.css";
 import ThemeSelector from "../common/ThemeSelector";
@@ -9,6 +10,7 @@ import ThemeSelector from "../common/ThemeSelector";
 const Header = () => {
   const user = useAppSelector((state) => state.auth.user);
 
+  const { data: cartData } = useCart();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -22,6 +24,12 @@ const Header = () => {
       },
     });
   };
+  const cart = cartData?.data;
+
+  const cartItemCount =
+    cart && "items" in cart
+      ? cart.items.reduce((total, item) => total + item.quantity, 0)
+      : 0;
 
   return (
     <header className={styles.header}>
@@ -48,6 +56,14 @@ const Header = () => {
           >
             Products
           </NavLink>
+          <NavLink
+            to="/cart"
+            className={({ isActive }) =>
+              isActive ? styles.activeLink : styles.link
+            }
+          >
+            Cart ({cartItemCount})
+          </NavLink>
 
           <NavLink
             to="/orders"
@@ -66,7 +82,7 @@ const Header = () => {
             </span>
           )}
 
-          <ThemeSelector/>
+          <ThemeSelector />
 
           <button
             type="button"

@@ -9,6 +9,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import AppLayout from "../components/layout/AppLayout";
 import ProductList from "../pages/products/ProductList";
 import ProductDetails from "../pages/products/ProductDetails";
+import Cart from "../pages/cart/Cart";
 
 const AppRoutes = () => {
   return (
@@ -24,6 +25,7 @@ const AppRoutes = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/products/:id" element={<ProductDetails />} />
+            <Route path="/cart" element={<Cart />} />
           </Route>
         </Route>
       </Routes>

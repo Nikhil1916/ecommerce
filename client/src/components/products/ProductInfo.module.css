@@ -70,3 +70,78 @@
     font-size: var(--font-size-xl);
   }
 }
+
+.cartActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.quantityControls button {
+  width: 42px;
+  height: 100%;
+  border: 0;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  transition: background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.quantityControls button:hover:not(:disabled) {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.quantityControls button:disabled {
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+.quantityControls span {
+  min-width: 42px;
+  text-align: center;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.addToCartButton {
+  height: 44px;
+  padding: 0 var(--space-lg);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.addToCartButton:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.addToCartButton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.addToCartButton:disabled {
+  background: var(--color-disabled-background);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
