@@ -24,11 +24,8 @@ export class PaymentController {
       throw new ApiError(400, "Missing Razorpay signature");
     }
 
-    const rawBody = (
-      req as Request & {
-        rawBody: Buffer;
-      }
-    ).rawBody;
+
+    const rawBody = req.body as Buffer;
 
     await this.paymentService.handleWebhook(rawBody, signature);
 

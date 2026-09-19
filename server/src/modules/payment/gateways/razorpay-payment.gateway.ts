@@ -32,53 +32,74 @@ export class RazorpayPaymentGateway implements IPaymentGateway {
     };
   }
 
-  
-  async handleWebhook(
-    payload: Buffer,
-    signature: string,
-  ): Promise<{
-    orderId: string;
-    status: "SUCCESS" | "FAILED";
-  }> {
-    const expectedSignature = crypto
-      .createHmac("sha256", env.RAZORPAY_WEBHOOK_SECRET)
-      .update(payload)
-      .digest("hex");
+async handleWebhook(
+  payload: Buffer,
+  signature: string,
+): Promise<{
+  orderId: string;
+  status: "SUCCESS" | "FAILED";
+}> {
+  const expectedSignature = crypto
+    .createHmac("sha256", env.RAZORPAY_WEBHOOK_SECRET)
+    .update(payload)
+    .digest("hex");
 
-    const isValid =
-      expectedSignature.length === signature.length &&
-      crypto.timingSafeEqual(
-        Buffer.from(expectedSignature),
-        Buffer.from(signature),
+  const isValid =
+    expectedSignature.length === signature.length &&
+    crypto.timingSafeEqual(
+      Buffer.from(expectedSignature),
+      Buffer.from(signature),
+    );
+
+  if (!isValid) {
+    throw new Error("Invalid Razorpay webhook signature");
+  }
+
+  const webhook = JSON.parse(payload.toString("utf8"));
+
+  switch (webhook.event) {
+    case "payment.captured": {
+      const payment = webhook.payload.payment.entity;
+
+      const razorpayOrder = await this.razorpay.orders.fetch(
+        payment.order_id,
       );
 
-    if (!isValid) {
-      throw new Error("Invalid Razorpay webhook signature");
-    }
-
-    const webhook = JSON.parse(payload.toString("utf8"));
-
-    switch (webhook.event) {
-      case "payment.captured": {
-        const payment = webhook.payload.payment.entity;
-
-        return {
-          orderId: payment.order_id,
-          status: "SUCCESS",
-        };
+      if (!razorpayOrder.receipt) {
+        throw new Error(
+          `Razorpay order ${payment.order_id} does not have a receipt`,
+        );
       }
 
-      case "payment.failed": {
-        const payment = webhook.payload.payment.entity;
+      return {
+        orderId: razorpayOrder.receipt as string,
+        status: "SUCCESS",
+      };
+    }
 
-        return {
-          orderId: payment.order_id,
-          status: "FAILED",
-        };
+    case "payment.failed": {
+      const payment = webhook.payload.payment.entity;
+
+      const razorpayOrder = await this.razorpay.orders.fetch(
+        payment.order_id,
+      );
+
+      if (!razorpayOrder.receipt) {
+        throw new Error(
+          `Razorpay order ${payment.order_id} does not have a receipt`,
+        );
       }
 
-      default:
-        throw new Error(`Unsupported Razorpay webhook event: ${webhook.event}`);
+      return {
+        orderId: razorpayOrder.receipt as string,
+        status: "FAILED",
+      };
     }
+
+    default:
+      throw new Error(
+        `Unsupported Razorpay webhook event: ${webhook.event}`,
+      );
   }
+}
 }
