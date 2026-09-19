@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from "react-router-dom";
 
 import {
@@ -10,6 +11,7 @@ import {
 import type { PopulatedCart } from "../../types/cart.types";
 
 import styles from "./Cart.module.css";
+import { useCreatePayment, useStartCheckout } from "../../hooks/useCheckout";
 
 const Cart = () => {
   const { data, isLoading, isError } = useCart();
@@ -17,6 +19,44 @@ const Cart = () => {
   const updateMutation = useUpdateCartItem();
   const removeMutation = useRemoveCartItem();
   const clearMutation = useClearCart();
+  const startCheckoutMutation = useStartCheckout();
+  const createPaymentMutation = useCreatePayment();
+
+  const handleCheckout = () => {
+    startCheckoutMutation.mutate(undefined, {
+      onSuccess: (response: any) => {
+        const order = response.data;
+        createPaymentMutation.mutate(
+          {
+            orderId: order._id,
+            amount: order.totalAmount,
+          },
+          {
+            onSuccess: (paymentResponse) => {
+              console.log("Razorpay Order:", paymentResponse.data.paymentId);
+              const razorpay = new window.Razorpay({
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: order.totalAmount * 100,
+                currency: "INR",
+                name: "Your Ecommerce App",
+                description: `Order ${order.orderNumber}`,
+                order_id: paymentResponse.data.paymentId,
+
+                handler: (response) => {
+                  console.log("Payment successful:", response);
+                },
+
+                theme: {
+                  color: "#3399cc",
+                },
+              });
+              razorpay.open();
+            },
+          },
+        );
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -94,8 +134,7 @@ const Cart = () => {
           <h1>Your Cart</h1>
 
           <span>
-            {cart.items.length}{" "}
-            {cart.items.length === 1 ? "item" : "items"}
+            {cart.items.length} {cart.items.length === 1 ? "item" : "items"}
           </span>
         </div>
 
@@ -106,33 +145,23 @@ const Cart = () => {
               const itemTotal = product.price * item.quantity;
 
               return (
-                <article
-                  key={item.productId}
-                  className={styles.cartItem}
-                >
+                <article key={item.productId} className={styles.cartItem}>
                   <div className={styles.imageWrapper}>
                     {product.images?.[0] ? (
                       <img
                         src={product.images[0].url}
-                        alt={
-                          product.images[0].alt ??
-                          product.name
-                        }
+                        alt={product.images[0].alt ?? product.name}
                         className={styles.image}
                       />
                     ) : (
-                      <div className={styles.noImage}>
-                        No image
-                      </div>
+                      <div className={styles.noImage}>No image</div>
                     )}
                   </div>
 
                   <div className={styles.itemDetails}>
                     <h2>{product.name}</h2>
 
-                    <p className={styles.sku}>
-                      SKU: {product.sku}
-                    </p>
+                    <p className={styles.sku}>SKU: {product.sku}</p>
 
                     <p className={styles.price}>
                       ₹{product.price.toLocaleString("en-IN")}
@@ -144,14 +173,10 @@ const Cart = () => {
                       <button
                         type="button"
                         onClick={() =>
-                          handleDecrease(
-                            item.productId,
-                            item.quantity,
-                          )
+                          handleDecrease(item.productId, item.quantity)
                         }
                         disabled={
-                          item.quantity <= 1 ||
-                          updateMutation.isPending
+                          item.quantity <= 1 || updateMutation.isPending
                         }
                         aria-label="Decrease quantity"
                       >
@@ -163,10 +188,7 @@ const Cart = () => {
                       <button
                         type="button"
                         onClick={() =>
-                          handleIncrease(
-                            item.productId,
-                            item.quantity,
-                          )
+                          handleIncrease(item.productId, item.quantity)
                         }
                         disabled={
                           item.quantity >= product.stock ||
@@ -185,9 +207,7 @@ const Cart = () => {
                     <button
                       type="button"
                       className={styles.removeButton}
-                      onClick={() =>
-                        handleRemove(item.productId)
-                      }
+                      onClick={() => handleRemove(item.productId)}
                       disabled={removeMutation.isPending}
                     >
                       Remove
@@ -203,9 +223,7 @@ const Cart = () => {
               onClick={handleClearCart}
               disabled={clearMutation.isPending}
             >
-              {clearMutation.isPending
-                ? "Clearing..."
-                : "Clear Cart"}
+              {clearMutation.isPending ? "Clearing..." : "Clear Cart"}
             </button>
           </section>
 
@@ -214,9 +232,7 @@ const Cart = () => {
 
             <div className={styles.summaryRow}>
               <span>Subtotal</span>
-              <span>
-                ₹{subtotal.toLocaleString("en-IN")}
-              </span>
+              <span>₹{subtotal.toLocaleString("en-IN")}</span>
             </div>
 
             <div className={styles.summaryRow}>
@@ -228,22 +244,21 @@ const Cart = () => {
 
             <div className={styles.totalRow}>
               <span>Total</span>
-              <span>
-                ₹{subtotal.toLocaleString("en-IN")}
-              </span>
+              <span>₹{subtotal.toLocaleString("en-IN")}</span>
             </div>
 
             <button
               type="button"
               className={styles.checkoutButton}
+              onClick={handleCheckout}
+              disabled={startCheckoutMutation.isPending}
             >
-              Proceed to Checkout
+              {startCheckoutMutation.isPending
+                ? "Proceeding..."
+                : "Proceed to Checkout"}
             </button>
 
-            <Link
-              to="/products"
-              className={styles.continueLink}
-            >
+            <Link to="/products" className={styles.continueLink}>
               Continue Shopping
             </Link>
           </aside>
