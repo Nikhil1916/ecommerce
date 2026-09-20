@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from "react-router-dom";
-
+import { toast } from "sonner";
 import {
+  CART_QUERY_KEY,
   useCart,
   useClearCart,
   useRemoveCartItem,
@@ -11,21 +12,54 @@ import {
 import type { PopulatedCart } from "../../types/cart.types";
 
 import styles from "./Cart.module.css";
-import { useCreatePayment, useStartCheckout } from "../../hooks/useCheckout";
+import {
+  useCreatePayment,
+  useStartCheckout,
+  useOrder,
+} from "../../hooks/useCheckout";
+import { useEffect, useState, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Cart = () => {
   const { data, isLoading, isError } = useCart();
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const paymentHandledRef = useRef(false);
 
   const updateMutation = useUpdateCartItem();
   const removeMutation = useRemoveCartItem();
   const clearMutation = useClearCart();
   const startCheckoutMutation = useStartCheckout();
   const createPaymentMutation = useCreatePayment();
+  const orderQuery = useOrder(orderId);
+  const queryClient = useQueryClient();
+  useEffect(() => {
+
+    const paymentStatus = orderQuery.data?.data.paymentStatus;
+
+    if(!paymentStatus || paymentHandledRef.current == true) return;
+
+    if (paymentStatus === "PAID") {
+       paymentHandledRef.current = true;
+      queryClient.invalidateQueries({
+        queryKey: CART_QUERY_KEY,
+      });
+
+      toast.success("Payment successful!");
+    }
+
+    if (paymentStatus === "FAILED") {
+       paymentHandledRef.current = true;
+      toast.error("Payment failed. Your cart has been kept.");
+    }
+  }, [orderQuery.data, queryClient]);
+
+  console.log(orderQuery.data);
 
   const handleCheckout = () => {
     startCheckoutMutation.mutate(undefined, {
       onSuccess: (response: any) => {
         const order = response.data;
+        setOrderId(order._id);
         createPaymentMutation.mutate(
           {
             orderId: order._id,

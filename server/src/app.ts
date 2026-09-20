@@ -16,6 +16,7 @@ import { paymentRouter } from "./modules/payment/routes/payment.routes";
 import { stockNotificationRoutes } from "./modules/notification/stock-notification.module";
 import { importRouter } from "./modules/imports/routes/import.routes";
 import { dashboardRouter } from "./modules/dashboard/dashboard.routes";
+import { orderRouter } from "./modules/order/routes/order.routes";
 import cors from "cors";
 const app = express();
 app.use(
@@ -52,6 +53,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/inventory", inventoryRoutes);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/checkout", checkoutRouter);
+app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/imports", importRouter);
 app.use("/api/v1/admin", dashboardRouter);
 app.use("/api/v1", stockNotificationRoutes);
