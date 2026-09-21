@@ -23,6 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 const Cart = () => {
   const { data, isLoading, isError } = useCart();
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [razorpayClosed, setRazorpayClosed] = useState(false);
   const paymentHandledRef = useRef(false);
 
   const updateMutation = useUpdateCartItem();
@@ -33,64 +34,86 @@ const Cart = () => {
   const orderQuery = useOrder(orderId);
   const queryClient = useQueryClient();
   useEffect(() => {
-
     const paymentStatus = orderQuery.data?.data.paymentStatus;
+    console.log(razorpayClosed, paymentStatus);
 
-    if(!paymentStatus || paymentHandledRef.current == true) return;
+  if (
+    !paymentStatus ||
+    paymentHandledRef.current
+  ) {
+    return;
+  }
 
-    if (paymentStatus === "PAID") {
-       paymentHandledRef.current = true;
-      queryClient.invalidateQueries({
-        queryKey: CART_QUERY_KEY,
-      });
+  if (paymentStatus === "PAID") {
+    paymentHandledRef.current = true;
 
-      toast.success("Payment successful!");
-    }
+    queryClient.invalidateQueries({
+      queryKey: CART_QUERY_KEY,
+    });
 
-    if (paymentStatus === "FAILED") {
-       paymentHandledRef.current = true;
-      toast.error("Payment failed. Your cart has been kept.");
-    }
-  }, [orderQuery.data, queryClient]);
+    toast.success("Payment successful!");
+  }
 
+  if (paymentStatus === "FAILED") {
+    paymentHandledRef.current = true;
+
+    toast.error("Payment failed. Your cart has been kept.");
+  }
+}, [orderQuery.data, queryClient]);
   console.log(orderQuery.data);
 
-  const handleCheckout = () => {
-    startCheckoutMutation.mutate(undefined, {
-      onSuccess: (response: any) => {
-        const order = response.data;
-        setOrderId(order._id);
-        createPaymentMutation.mutate(
-          {
-            orderId: order._id,
-            amount: order.totalAmount,
-          },
-          {
-            onSuccess: (paymentResponse) => {
-              console.log("Razorpay Order:", paymentResponse.data.paymentId);
-              const razorpay = new window.Razorpay({
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: order.totalAmount * 100,
-                currency: "INR",
-                name: "Your Ecommerce App",
-                description: `Order ${order.orderNumber}`,
-                order_id: paymentResponse.data.paymentId,
+const handleCheckout = () => {
+  startCheckoutMutation.mutate(undefined, {
+    onSuccess: (response: any) => {
+      const order = response.data;
+      setRazorpayClosed(false);
+      setOrderId(order._id);
 
-                handler: (response) => {
-                  console.log("Payment successful:", response);
-                },
+      createPaymentMutation.mutate(
+        {
+          orderId: order._id,
+          amount: order.totalAmount,
+        },
+        {
+          onSuccess: (paymentResponse) => {
+            const razorpay = new window.Razorpay({
+              key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+              amount: order.totalAmount * 100,
+              currency: "INR",
+              name: "Your Ecommerce App",
+              description: `Order ${order.orderNumber}`,
+              order_id: paymentResponse.data.paymentId,
 
-                theme: {
-                  color: "#3399cc",
-                },
-              });
-              razorpay.open();
-            },
+              handler: (response) => {
+                console.log("Payment successful:", response);
+              },
+
+              theme: {
+                color: "#3399cc",
+              },
+              modal: {
+                ondismiss: () => {
+                  console.log("hello");
+                  setRazorpayClosed(true);
+                }
+              }
+            });
+
+            razorpay.open();
           },
-        );
-      },
-    });
-  };
+
+          onError: () => {
+            toast.error("Unable to initialize payment. Please try again.");
+          },
+        },
+      );
+    },
+
+    onError: () => {
+      toast.error("Unable to start checkout. Please try again.");
+    },
+  });
+};
 
   if (isLoading) {
     return (
@@ -285,9 +308,9 @@ const Cart = () => {
               type="button"
               className={styles.checkoutButton}
               onClick={handleCheckout}
-              disabled={startCheckoutMutation.isPending}
+              disabled={startCheckoutMutation.isPending || createPaymentMutation.isPending}
             >
-              {startCheckoutMutation.isPending
+              {startCheckoutMutation.isPending || createPaymentMutation.isPending
                 ? "Proceeding..."
                 : "Proceed to Checkout"}
             </button>
