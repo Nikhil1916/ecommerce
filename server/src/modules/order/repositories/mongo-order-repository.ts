@@ -93,4 +93,15 @@ export class MongoOrderRepository implements IOrderRepository {
   ): Promise<Order | null> {
     return OrderModel.findById(orderId).session(session || null);
   }
+
+  async findByUserId(
+    userId: string,
+    status?: OrderStatus,
+  ): Promise<Order[]> {
+    return OrderModel.find({
+      userId,
+      paymentStatus: PaymentStatus.PAID,
+      ...(status ? { status } : {}),
+    }).sort({ createdAt: -1 });
+  }
 }

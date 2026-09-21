@@ -73,6 +73,13 @@ export class OrderService {
     return order;
   }
 
+  async getOrdersByUserId(
+    userId: string,
+    status?: OrderStatus,
+  ): Promise<Order[]> {
+    return this.orderRepository.findByUserId(userId, status);
+  }
+
   async markOrderAsExpired(orderId: string, session?: ClientSession) {
     const order = await this.orderRepository.markOrderAsExpired(
       orderId,

@@ -1,5 +1,5 @@
 import { Order } from "../models/order.model";
-import { CreateOrderData } from "../types/order.types";
+import { CreateOrderData, OrderStatus } from "../types/order.types";
 import { ClientSession } from "mongoose";
 
 export interface IOrderRepository {
@@ -16,6 +16,11 @@ export interface IOrderRepository {
   ): Promise<Order | null>;
 
   findById(orderId: string, session?: ClientSession): Promise<Order | null>;
+
+  findByUserId(
+    userId: string,
+    status?: OrderStatus,
+  ): Promise<Order[]>;
 
   markOrderAsExpired(
     orderId: string,
