@@ -4,6 +4,9 @@ import { startCheckout } from "../services/checkout.api";
 import { createPayment } from "../services/payment.api";
 import { getOrderById } from "../services/order.api";
 
+import { getOrders } from "../services/order.api";
+import type { OrderStatus } from "../types/checkout.types";
+
 export const useStartCheckout = () => {
   return useMutation({
     mutationFn: startCheckout,
@@ -30,5 +33,12 @@ export const useOrder = (orderId: string | null) => {
 
       return 2000;
     },
+  });
+};
+
+export const useOrders = (status?: OrderStatus) => {
+  return useQuery({
+    queryKey: ["orders", status],
+    queryFn: () => getOrders(status),
   });
 };
