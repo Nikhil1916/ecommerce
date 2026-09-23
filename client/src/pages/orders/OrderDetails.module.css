@@ -1,0 +1,220 @@
+.page {
+  min-height: calc(100vh - 64px);
+  background: var(--color-background);
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: var(--space-xl);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  transition: var(--transition-fast);
+}
+
+.backLink:hover {
+  color: var(--color-primary);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.header h1 {
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.header p {
+  margin-top: var(--space-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.status {
+  border-radius: var(--radius-pill);
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.statusconfirmed {
+  background: var(--color-success-background);
+  color: var(--color-success-text);
+}
+
+.statusshipped {
+  background: var(--color-info-background);
+  color: var(--color-info-text);
+}
+
+.statusdelivered {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.statuscancelled {
+  background: var(--color-error-background);
+  color: var(--color-error-text);
+}
+
+.statusexpired {
+  background: var(--color-warning-background);
+  color: var(--color-warning-text);
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--space-lg);
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.card h2 {
+  margin-bottom: var(--space-lg);
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.itemName {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.itemMeta {
+  margin-top: var(--space-xs);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.item strong {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.summary > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.summary strong,
+.summary > div > span:last-child {
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.paymentStatus {
+  color: var(--color-success-text) !important;
+}
+
+.state {
+  display: flex;
+  min-height: 300px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.state h2 {
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+}
+
+.state p {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.backButton {
+  margin-top: var(--space-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  transition: var(--transition-fast);
+}
+
+.backButton:hover {
+  background: var(--color-primary-dark);
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: var(--space-xl) var(--space-md);
+  }
+
+  .header {
+    flex-direction: column;
+  }
+
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
